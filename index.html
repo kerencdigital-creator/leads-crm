@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ניהול לידים ומכירות</title>
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --bg2:#eaf0f8;
+      --surface:rgba(255,255,255,.72);
+      --surface-strong:rgba(255,255,255,.9);
+      --surface-soft:rgba(255,255,255,.5);
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:rgba(148,163,184,.24);
+      --shadow:0 14px 40px rgba(15,23,42,.10), inset 0 1px 0 rgba(255,255,255,.55);
+      --shadow-soft:0 8px 24px rgba(15,23,42,.08);
+      --accent:#4f7cff;
+      --accent-2:#79e0ff;
+      --accent-glow:rgba(79,124,255,.22);
+      --nav:#091224;
+      --success:#0ea5a4;
+      --warning:#f59e0b;
+      --danger:#ef4444;
+      --radius-xl:28px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --glass-blur:24px;
+    }
+    body.dark{
+      --bg:#08101d;
+      --bg2:#0f1a2b;
+      --surface:rgba(15,23,42,.62);
+      --surface-strong:rgba(15,23,42,.84);
+      --surface-soft:rgba(15,23,42,.45);
+      --text:#ecf3ff;
+      --muted:#a9b7ce;
+      --line:rgba(148,163,184,.18);
+      --shadow:0 18px 48px rgba(2,6,23,.46), inset 0 1px 0 rgba(255,255,255,.05);
+      --shadow-soft:0 8px 26px rgba(2,6,23,.35);
+      --accent:#5b8cff;
+      --accent-2:#61f3ff;
+      --accent-glow:rgba(91,140,255,.25);
+      --nav:#091224;
+      --success:#14b8a6;
+      --warning:#f59e0b;
+      --danger:#fb7185;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 15% 12%, rgba(120,224,255,.18), transparent 22%),
+        radial-gradient(circle at 82% 12%, rgba(79,124,255,.18), transparent 22%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color:var(--text);
+      min-height:100vh;
+      transition:background .25s ease,color .25s ease;
+    }
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:300px 1fr;
+      gap:24px;
+      padding:22px;
+    }
+    .glass{
+      background:var(--surface);
+      border:1px solid var(--line);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow:var(--shadow);
+    }
+    .sidebar{
+      padding:18px;
+      border-radius:32px;
+      position:sticky;
+      top:22px;
+      height:calc(100vh - 44px);
+      overflow:auto;
+    }
+    .brand{
+      padding:18px;
+      border-radius:26px;
+      background:linear-gradient(180deg, rgba(9,18,36,.96), rgba(9,18,36,.90));
+      color:#fff;
+      box-shadow:0 16px 34px rgba(2,6,23,.24);
+      margin-bottom:18px;
+    }
+    .brand small{color:#c9d4e8}
+    .brand h1{margin:8px 0 6px;font-size:30px;line-height:1.05}
+    .brand p{margin:0;color:#cbd5e1}
+    .nav{display:grid;gap:10px;margin-top:14px}
+    .nav button{
+      width:100%;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--muted);
+      padding:14px 16px;
+      border-radius:20px;
+      text-align:right;
+      font-weight:700;
+      transition:.22s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .nav button:hover{
+      transform:translateY(-1px);
+      background:var(--surface-soft);
+      color:var(--text);
+      border-color:var(--line);
+    }
+    .nav button.active{
+      color:#fff;
+      background:linear-gradient(135deg, rgba(79,124,255,.95), rgba(97,243,255,.55));
+      box-shadow:0 10px 28px var(--accent-glow);
+      border-color:rgba(255,255,255,.15);
+    }
+    .nav button.active::after{
+      content:"";
+      position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(255,255,255,.15), transparent);
+      pointer-events:none;
+    }
+    .sidebar-footer{
+      margin-top:18px;
+      display:grid;
+      gap:10px;
+    }
+    .theme-toggle{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 16px;
+      border-radius:20px;
+    }
+    .switch{
+      width:72px; height:40px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:var(--surface-strong);
+      position:relative;
+      box-shadow:inset 0 2px 10px rgba(15,23,42,.08);
+    }
+    .switch .knob{
+      width:30px; height:30px; border-radius:50%;
+      position:absolute; top:4px; right:4px;
+      background:linear-gradient(180deg,#fff,#dbe7ff);
+      box-shadow:0 8px 18px rgba(15,23,42,.16);
+      transition:.25s ease;
+    }
+    body.dark .switch .knob{ right:36px; background:linear-gradient(180deg,#7aa3ff,#4f7cff);}
+    .btn{
+      border:none;
+      padding:12px 16px;
+      border-radius:18px;
+      font-weight:700;
+      transition:.2s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#fff;
+      box-shadow:0 12px 28px var(--accent-glow);
+    }
+    .btn-secondary{
+      background:var(--surface-strong);
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-soft);
+    }
+    .main{padding-right:4px}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      margin-bottom:20px;
+    }
+    .title-wrap small{color:var(--muted); font-weight:700}
+    .title-wrap h2{margin:6px 0 0;font-size:42px;line-height:1}
+    .screen{display:none}
+    .screen.active{display:block}
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:16px;
+    }
+    .stat-card{
+      padding:18px;
+      border-radius:24px;
+    }
+    .stat-top{display:flex; justify-content:space-between; align-items:start; gap:10px}
+    .stat-label{color:var(--muted); font-size:14px; font-weight:700}
+    .stat-value{font-size:36px; font-weight:800; margin:10px 0 4px}
+    .stat-sub{color:var(--muted); font-size:12px}
+    .glow-dot{
+      width:14px; height:14px; border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      box-shadow:0 0 22px var(--accent-2);
+      margin-top:4px;
+    }
+    .grid-2{display:grid; grid-template-columns:1.05fr .95fr; gap:18px; margin-top:18px}
+    .card{
+      border-radius:28px;
+      padding:20px;
+    }
+    h3{margin:0 0 14px}
+    .worker-list,.lead-list,.task-list{display:grid; gap:12px}
+    .worker-row,.lead-row,.task-row,.note{
+      padding:14px 16px;
+      border-radius:22px;
+      background:var(--surface-strong);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-soft);
+    }
+    .worker-row:hover,.lead-row:hover,.task-row:hover{
+      transform:translateY(-1px);
+      transition:.18s ease;
+    }
+    .lead-row.selected{outline:2px solid rgba(79,124,255,.30)}
+    .row-title{
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+      font-weight:800;
+    }
+    .row-meta{color:var(--muted); font-size:13px; line-height:1.7; margin-top:4px}
+    .pill{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:var(--surface);
+      color:var(--muted);
+      font-size:12px; font-weight:800;
+      min-height:26px;
+    }
+    .pill.new{color:#2563eb;background:rgba(37,99,235,.12)}
+    .pill.work{color:#d97706;background:rgba(245,158,11,.14)}
+    .pill.done{color:#0f766e;background:rgba(20,184,166,.14)}
+    .bar{
+      height:14px;
+      border-radius:999px;
+      background:rgba(148,163,184,.16);
+      overflow:hidden;
+      margin-top:6px;
+      border:1px solid var(--line);
+    }
+    .bar > div{
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow:0 0 16px var(--accent-glow);
+    }
+    .leads-layout,.tasks-layout{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:18px;
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .filters{
+      display:grid;
+      grid-template-columns:1fr 190px 190px;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--line);
+      background:var(--surface-strong);
+      color:var(--text);
+      border-radius:18px;
+      padding:13px 14px;
+      outline:none;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.10), var(--shadow-soft);
+    }
+    input::placeholder, textarea::placeholder{color:var(--muted)}
+    textarea{min-height:96px; resize:vertical}
+    label{display:block; font-weight:700; font-size:14px}
+    label > input, label > select, label > textarea{margin-top:8px}
+    .info-grid{
+      display:grid; grid-template-columns:1fr 1fr; gap:10px;
+      margin-top:16px;
+      padding:14px;
+      background:var(--surface-soft);
+      border-radius:22px;
+      border:1px solid var(--line);
+    }
+    .notes{display:grid; gap:10px; max-height:220px; overflow:auto}
+    .actions-row,.top-actions{display:flex; gap:10px; flex-wrap:wrap}
+    .section-head{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .muted{color:var(--muted)}
+    .tiny{font-size:12px}
+    .divider{height:1px;background:var(--line);margin:14px 0}
+    .mobile-only{display:none}
+    .details-sticky{position:sticky; top:20px}
+    .empty{
+      text-align:center;
+      color:var(--muted);
+      padding:18px;
+      border-radius:22px;
+      border:1px dashed var(--line);
+      background:var(--surface-soft);
+    }
+    .small-badge{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(79,124,255,.12);
+      color:var(--accent);
+      font-size:12px;
+      font-weight:800;
+      border:1px solid rgba(79,124,255,.18);
+    }
+
+    @media (max-width:1200px){
+      .stats{grid-template-columns:repeat(3, minmax(0,1fr))}
+      .grid-2,.leads-layout,.tasks-layout{grid-template-columns:1fr}
+      .details-sticky{position:static}
+    }
+    @media (max-width:860px){
+      .app{grid-template-columns:1fr; padding:14px}
+      .sidebar{
+        position:static;height:auto;
+      }
+      .stats{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .form-grid,.filters,.info-grid{grid-template-columns:1fr}
+      .topbar{flex-direction:column; align-items:stretch}
+      .title-wrap h2{font-size:34px}
+    }
+    @media (max-width:520px){
+      .stats{grid-template-columns:1fr}
+      .brand h1{font-size:26px}
+      .title-wrap h2{font-size:28px}
+      .sidebar,.card,.stat-card{border-radius:24px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar glass">
+    <div class="brand">
+      <small>MVP דמו · Neo Glass UI</small>
+      <h1>ניהול לידים ומכירות</h1>
+      <p>טופס לידים + WhatsApp + תצוגת Light / Dark</p>
+    </div>
+
+    <nav class="nav">
+      <button class="active" data-screen="dashboard" onclick="showScreen('dashboard')">דשבורד מנהלים</button>
+      <button data-screen="leads" onclick="showScreen('leads')">לידים</button>
+      <button data-screen="followups" onclick="showScreen('followups')">תזכורות Follow-up</button>
+      <button data-screen="tasks" onclick="showScreen('tasks')">ניהול משימות</button>
+      <button data-screen="reports" onclick="showScreen('reports')">דוחות</button>
+      <button data-screen="team" onclick="showScreen('team')">צוות והרשאות</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="theme-toggle glass">
+        <div>
+          <div style="font-weight:800">Dark / Light</div>
+          <div class="muted tiny">החלפת מצב תצוגה</div>
+        </div>
+        <button class="switch" onclick="toggleTheme()" aria-label="Toggle theme">
+          <span class="knob"></span>
+        </button>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="showScreen('leads'); setTimeout(()=>document.getElementById('newFullName')?.focus(),150)">+ הוספת ליד דמו</button>
+      <button class="btn btn-secondary" style="width:100%" onclick="resetDemo()">איפוס דמו</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="title-wrap">
+        <small>מערכת פנימית ל־11 עובדים</small>
+        <h2 id="screenTitle">דשבורד מנהלים</h2>
+      </div>
+      <div class="actions-row">
+        <span class="small-badge">Neo‑Tactile + Glass</span>
+        <button class="btn btn-secondary" onclick="toggleTheme()">החלף מצב תצוגה</button>
+      </div>
+    </div>
+
+    <section id="dashboard" class="screen active"></section>
+    <section id="leads" class="screen"></section>
+    <section id="followups" class="screen"></section>
+    <section id="tasks" class="screen"></section>
+    <section id="reports" class="screen"></section>
+    <section id="team" class="screen"></section>
+  </main>
+</div>
+
+<script>
+const statuses = ["חדש", "בטיפול", "לא ענה", "לחזור אליו", "שיחה נקבעה", "נסגר / נמכר", "לא רלוונטי"];
+const LEAD_SOURCE = "טופס - דר אירית שחם";
+const today = "2026-05-23";
+
+const workers = [
+  { id: "w-0", name: "שגיא", active: true, role: "גרפיקה" },
+  { id: "w-1", name: "לואיזה", active: true, role: "מכירות" },
+  { id: "w-2", name: "דניאל", active: true, role: "מכירות" },
+  { id: "w-3", name: "ליהי", active: true, role: "מכירות" },
+  { id: "w-4", name: "נלי", active: true, role: "מדריכה ומכירות" },
+  { id: "w-5", name: "אורית", active: true, role: "מנהלת משרד ומכירות" },
+  { id: "w-6", name: "שילי", active: true, role: "מנהלת שיווק" },
+  { id: "w-7", name: "שני", active: true, role: "יוצרת תוכן" },
+  { id: "w-8", name: "קרן", active: true, role: "אתרים" },
+  { id: "w-9", name: "חוה", active: true, role: "לוגיסטיקה" },
+  { id: "w-10", name: "גיירן", active: true, role: "גביה" },
+];
+
+const initialLeads = [
+  { id:"L-1001", fullName:"לירון כהן", phone:"054-2095258", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-1", createdAt:"2026-05-19", followUpAt:"2026-05-19", notes:["התקבל מהטופס בתאריך 19.05.2026 בשעה 17:18. מיקום: כן, רלוונטי מאוד."], lastAction:"ליד חדש מהטופס", saleAmount:0 },
+  { id:"L-1002", fullName:"ורד מויאל", phone:"050-3822203", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-2", createdAt:"2026-05-19", followUpAt:"2026-05-19", notes:["התקבל מהטופס בתאריך 19.05.2026 בשעה 18:54. מיקום: כן, רלוונטי מאוד."], lastAction:"ליד חדש מהטופס", saleAmount:0 },
+  { id:"L-1003", fullName:"לימור מלא בן הרוש", phone:"050-9447890", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"פגישת ייעוץ כללית", status:"חדש", ownerId:"w-3", createdAt:"2026-05-19", followUpAt:"2026-05-19", notes:["התקבל מהטופס בתאריך 19.05.2026 בשעה 19:41. מיקום: כן, רלוונטי מאוד."], lastAction:"ליד חדש מהטופס", saleAmount:0 },
+  { id:"L-1004", fullName:"גילת לוין", phone:"050-7450967", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-4", createdAt:"2026-05-20", followUpAt:"2026-05-20", notes:["התקבל מהטופס בתאריך 20.05.2026 בשעה 03:54. מיקום: כן, רלוונטי מאוד."], lastAction:"ליד חדש מהטופס", saleAmount:0 },
+  { id:"L-1005", fullName:"איילה כהן", phone:"050-6286609", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-5", createdAt:"2026-05-23", followUpAt:"2026-05-23", notes:["התקבל מהטופס בתאריך 23.05.2026 בשעה 02:10. מיקום: כן, רלוונטי מאוד."], lastAction:"ליד חדש מהטופס", saleAmount:0 },
+  { id:"L-1006", fullName:"מיכל בידאני", phone:"052-6958897", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-6", createdAt:"2026-05-23", followUpAt:"2026-05-23", notes:["התקבל מהטופס בתאריך 23.05.2026 בשעה 02:11. מיקום: כן, רלוונטי מאוד."], lastAction:"ליד חדש מהטופס", saleAmount:0 },
+  { id:"L-1007", fullName:"מיכל מלכה", phone:"054-9987799", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-7", createdAt:"2026-05-23", followUpAt:"2026-05-23", notes:["התקבל מהטופס בתאריך 23.05.2026 בשעה 04:57. מיקום: כן, רלוונטי מאוד."], lastAction:"ליד חדש מהטופס", saleAmount:0 },
+  { id:"L-1008", fullName:"כרמלה", phone:"052-5550912", email:"", city:"רחוק מרמת השרון", source:LEAD_SOURCE, product:"פיסול פנים - nexha mesoestetic", status:"לא רלוונטי", ownerId:"w-8", createdAt:"2026-05-23", followUpAt:"", notes:["התקבל מהטופס בתאריך 23.05.2026 בשעה 10:12. מיקום: לא, רחוק לי מדי."], lastAction:"סומן כלא רלוונטי לפי מיקום", saleAmount:0 },
+];
+
+const initialTasks = [
+  { id:"T-2001", title:"לחזור ללירון כהן", description:"לתאם שיחה ולהבין איזה טיפול פילינג רלוונטי עבורה.", ownerId:"w-1", relatedLeadId:"L-1001", status:"פתוחה", priority:"גבוהה", dueDate:"2026-05-23", createdAt:"2026-05-23" },
+  { id:"T-2002", title:"לשלוח וואטסאפ לורד מויאל", description:"לשלוח הודעת פתיחה עם פרטי הקליניקה ושעות זמינות.", ownerId:"w-2", relatedLeadId:"L-1002", status:"בתהליך", priority:"בינונית", dueDate:"2026-05-23", createdAt:"2026-05-23" },
+  { id:"T-2003", title:"להכין גרפיקה לקמפיין פילינגים", description:"ויזואל סטורי וגרסת פיד לקמפיין דר אירית שחם.", ownerId:"w-0", relatedLeadId:"", status:"פתוחה", priority:"בינונית", dueDate:"2026-05-24", createdAt:"2026-05-23" },
+  { id:"T-2004", title:"בדיקת מלאי לפני תיאום טיפולים", description:"לוודא זמינות חומרים רלוונטיים לטיפולי מרקם עור.", ownerId:"w-9", relatedLeadId:"", status:"הושלמה", priority:"נמוכה", dueDate:"2026-05-22", createdAt:"2026-05-22" },
+];
+
+let leads = load("crm_leads", initialLeads);
+let tasks = load("crm_tasks", initialTasks);
+let selectedLeadId = leads[0]?.id || "";
+let nextWorkerIndex = Number(localStorage.getItem("crm_next_worker_index") || 9);
+let activeScreen = "dashboard";
+
+function load(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : structuredClone(fallback);
+  } catch {
+    return structuredClone(fallback);
+  }
+}
+function save() {
+  localStorage.setItem("crm_leads", JSON.stringify(leads));
+  localStorage.setItem("crm_tasks", JSON.stringify(tasks));
+  localStorage.setItem("crm_next_worker_index", String(nextWorkerIndex));
+}
+function escapeHtml(text) {
+  return String(text ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[m]));
+}
+function formatDate(dateString) {
+  if (!dateString) return "—";
+  return new Date(dateString + "T00:00:00").toLocaleDateString("he-IL");
+}
+function getWorkerName(id) {
+  return workers.find(w => w.id === id)?.name || "לא משויך";
+}
+function getLeadName(id) {
+  if (!id) return "ללא ליד מקושר";
+  return leads.find(l => l.id === id)?.fullName || "ליד לא נמצא";
+}
+function pillClass(status) {
+  if (status === "חדש") return "pill new";
+  if (status === "בטיפול" || status === "בתהליך") return "pill work";
+  if (status === "נסגר / נמכר" || status === "הושלמה") return "pill done";
+  return "pill";
+}
+function stat(title, value, sub = "") {
+  return `<div class="stat-card glass"><div class="stat-top"><div><div class="stat-label">${title}</div><div class="stat-value">${value}</div>${sub ? `<div class="stat-sub">${sub}</div>` : ""}</div><span class="glow-dot"></span></div></div>`;
+}
+function themeInit(){
+  const savedTheme = localStorage.getItem("crm_theme") || "dark";
+  document.body.classList.toggle("dark", savedTheme === "dark");
+}
+function toggleTheme(){
+  const isDark = document.body.classList.toggle("dark");
+  localStorage.setItem("crm_theme", isDark ? "dark" : "light");
+}
+function showScreen(screen) {
+  activeScreen = screen;
+  document.querySelectorAll(".screen").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".nav button").forEach(el => el.classList.toggle("active", el.dataset.screen === screen));
+  document.getElementById(screen).classList.add("active");
+  const titles = { dashboard:"דשבורד מנהלים", leads:"ניהול לידים", followups:"תזכורות Follow-up", tasks:"ניהול משימות", reports:"דוחות מכירות", team:"צוות והרשאות" };
+  document.getElementById("screenTitle").textContent = titles[screen];
+  render();
+}
+function metrics() {
+  const incomingToday = leads.filter(l => l.createdAt === today).length;
+  const closed = leads.filter(l => l.status === "נסגר / נמכר");
+  const open = leads.filter(l => !["נסגר / נמכר", "לא רלוונטי"].includes(l.status)).length;
+  const dueFollowups = leads.filter(l => l.followUpAt && l.followUpAt <= today && l.status !== "נסגר / נמכר").length;
+  const totalSales = closed.reduce((sum, l) => sum + Number(l.saleAmount || 0), 0);
+  const conversionRate = leads.length ? Math.round((closed.length / leads.length) * 100) : 0;
+  return { incomingToday, closed: closed.length, open, dueFollowups, totalSales, conversionRate };
+}
+function taskMetrics() {
+  const open = tasks.filter(t => t.status !== "הושלמה").length;
+  const completed = tasks.filter(t => t.status === "הושלמה").length;
+  const overdue = tasks.filter(t => t.status !== "הושלמה" && t.dueDate && t.dueDate < today).length;
+  return { open, completed, overdue, total: tasks.length };
+}
+function workerStats() {
+  return workers.map(worker => {
+    const workerLeads = leads.filter(l => l.ownerId === worker.id);
+    const closed = workerLeads.filter(l => l.status === "נסגר / נמכר");
+    const workerTasks = tasks.filter(t => t.ownerId === worker.id);
+    return {
+      ...worker,
+      total: workerLeads.length,
+      closed: closed.length,
+      tasksOpen: workerTasks.filter(t => t.status !== "הושלמה").length,
+      tasksDone: workerTasks.filter(t => t.status === "הושלמה").length,
+      revenue: closed.reduce((sum, l) => sum + Number(l.saleAmount || 0), 0),
+    };
+  });
+}
+function renderDashboard() {
+  const m = metrics();
+  const tm = taskMetrics();
+  const statusCounts = statuses.map(status => ({ status, count: leads.filter(l => l.status === status).length }));
+  document.getElementById("dashboard").innerHTML = `
+    <div class="stats">
+      ${stat("לידים שנכנסו היום", m.incomingToday, "מקור: טופס - דר אירית שחם")}
+      ${stat("סגירות", m.closed, `המרה: ${m.conversionRate}%`)}
+      ${stat("תזכורות פתוחות", m.dueFollowups, "דורש טיפול היום")}
+      ${stat("משימות פתוחות", tm.open, `${tm.completed} הושלמו`)}
+      ${stat("סך מכירות", "₪" + m.totalSales.toLocaleString("he-IL"), "לפי עסקאות סגורות")}
+    </div>
+    <div class="grid-2">
+      <div class="card glass">
+        <h3>ביצועים לפי עובד</h3>
+        <div class="worker-list">
+          ${workerStats().map(w => `
+            <div class="worker-row">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+                <div>
+                  <div class="row-title">${w.name}</div>
+                  <div class="row-meta">${w.total} לידים · ${w.closed} סגירות</div>
+                  <div class="row-meta">${w.tasksOpen} משימות פתוחות · ${w.tasksDone} הושלמו</div>
+                </div>
+                <b>₪${w.revenue.toLocaleString("he-IL")}</b>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+      <div class="card glass">
+        <h3>משפך לפי סטטוס</h3>
+        ${statusCounts.map(item => {
+          const width = leads.length ? Math.max(8, Math.round((item.count / leads.length) * 100)) : 0;
+          return `<div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:14px"><b>${item.status}</b><span>${item.count}</span></div>
+            <div class="bar"><div style="width:${width}%"></div></div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+}
+function renderLeads() {
+  const selected = leads.find(l => l.id === selectedLeadId) || leads[0];
+  selectedLeadId = selected?.id || "";
+  const q = document.getElementById("leadSearch")?.value || "";
+  const statusFilter = document.getElementById("leadStatusFilter")?.value || "הכל";
+  const ownerFilter = document.getElementById("leadOwnerFilter")?.value || "הכל";
+
+  const filtered = leads.filter(l => {
+    const query = q.trim().toLowerCase();
+    const matchesQuery = !query || l.fullName.toLowerCase().includes(query) || l.phone.includes(query) || l.city.toLowerCase().includes(query) || l.email.toLowerCase().includes(query);
+    return matchesQuery && (statusFilter === "הכל" || l.status === statusFilter) && (ownerFilter === "הכל" || l.ownerId === ownerFilter);
+  });
+
+  document.getElementById("leads").innerHTML = `
+    <div class="leads-layout">
+      <div>
+        <div class="card glass" style="margin-bottom:18px">
+          <div class="section-head">
+            <div>
+              <h3>הוספת ליד חדש</h3>
+              <div class="muted tiny">חלוקה אוטומטית לפי העובד הבא בתור</div>
+            </div>
+            <span class="small-badge">Form Intake</span>
+          </div>
+          <div class="form-grid">
+            <input id="newFullName" placeholder="שם מלא">
+            <input id="newPhone" placeholder="טלפון">
+            <input id="newEmail" placeholder="אימייל">
+            <input id="newCity" placeholder="עיר / אזור">
+            <input id="newProduct" placeholder="מוצר / שירות" style="grid-column:1/-1">
+          </div>
+          <div style="margin-top:12px">
+            <button class="btn btn-primary" onclick="addLead()">הוספה וחלוקה אוטומטית</button>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <div class="section-head">
+            <div>
+              <h3>רשימת לידים</h3>
+              <div class="muted tiny">${filtered.length} תוצאות</div>
+            </div>
+          </div>
+          <div class="filters">
+            <input id="leadSearch" value="${escapeHtml(q)}" oninput="renderLeads()" placeholder="חיפוש לפי שם, טלפון, אימייל או עיר">
+            <select id="leadStatusFilter" onchange="renderLeads()">
+              <option>הכל</option>${statuses.map(s => `<option ${s === statusFilter ? "selected" : ""}>${s}</option>`).join("")}
+            </select>
+            <select id="leadOwnerFilter" onchange="renderLeads()">
+              <option value="הכל">כל העובדים</option>${workers.map(w => `<option value="${w.id}" ${w.id === ownerFilter ? "selected" : ""}>${w.name}</option>`).join("")}
+            </select>
+          </div>
+          <div class="lead-list">
+            ${filtered.length ? filtered.map(l => `
+              <button class="lead-row ${l.id === selectedLeadId ? "selected" : ""}" onclick="selectLead('${l.id}')">
+                <div class="row-title">${escapeHtml(l.fullName)} <span class="${pillClass(l.status)}">${l.status}</span></div>
+                <div class="row-meta">${escapeHtml(l.phone)} · ${escapeHtml(l.city)} · ${escapeHtml(l.product)}</div>
+                <div class="row-meta">מטפל: ${getWorkerName(l.ownerId)} · מקור: ${escapeHtml(l.source)}</div>
+              </button>
+            `).join("") : `<div class="empty">לא נמצאו לידים</div>`}
+          </div>
+        </div>
+      </div>
+
+      <div class="details-sticky">
+        ${selected ? `
+          <div class="card glass">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+              <div>
+                <h3 style="font-size:28px">${escapeHtml(selected.fullName)}</h3>
+                <div class="row-meta">${escapeHtml(selected.phone)} · ${escapeHtml(selected.email || "ללא אימייל")}</div>
+              </div>
+              <span class="${pillClass(selected.status)}">${selected.status}</span>
+            </div>
+
+            <div class="info-grid">
+              <div>עיר: <b>${escapeHtml(selected.city)}</b></div>
+              <div>מוצר: <b>${escapeHtml(selected.product)}</b></div>
+              <div>עובד מטפל: <b>${getWorkerName(selected.ownerId)}</b></div>
+              <div>תאריך פנייה: <b>${formatDate(selected.createdAt)}</b></div>
+              <div>Follow-up: <b>${formatDate(selected.followUpAt)}</b></div>
+              <div>פעולה אחרונה: <b>${escapeHtml(selected.lastAction)}</b></div>
+            </div>
+
+            <div class="form-grid" style="margin-top:16px">
+              <label>שינוי סטטוס
+                <select onchange="updateLead('${selected.id}', {status:this.value,lastAction:'סטטוס עודכן ל-' + this.value})">
+                  ${statuses.map(s => `<option ${s === selected.status ? "selected" : ""}>${s}</option>`).join("")}
+                </select>
+              </label>
+              <label>תאריך Follow-up
+                <input type="date" value="${selected.followUpAt}" onchange="updateLead('${selected.id}', {followUpAt:this.value,lastAction:'עודכן Follow-up'})">
+              </label>
+            </div>
+
+            <div class="actions-row" style="margin-top:14px">
+              <button class="btn btn-primary" onclick="sendWhatsapp('${selected.id}')">שליחת WhatsApp</button>
+              <button class="btn btn-secondary" onclick="closeLead('${selected.id}')">סימון כסגור</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div>
+              <h3>הוספת הערה</h3>
+              <textarea id="newNote" placeholder="כתבי הערה על הליד..."></textarea>
+              <button class="btn btn-secondary" style="margin-top:10px" onclick="addNote('${selected.id}')">שמירת הערה</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div>
+              <h3>היסטוריית הערות ופעולות</h3>
+              <div class="notes">${selected.notes.map(n => `<div class="note">${escapeHtml(n)}</div>`).join("")}</div>
+            </div>
+          </div>
+        ` : `<div class="card glass"><div class="empty">בחרי ליד</div></div>`}
+      </div>
+    </div>`;
+}
+function selectLead(id) {
+  selectedLeadId = id;
+  renderLeads();
+}
+function updateLead(id, changes) {
+  leads = leads.map(l => l.id === id ? { ...l, ...changes } : l);
+  save();
+  render();
+}
+function addNote(id) {
+  const text = document.getElementById("newNote")?.value.trim();
+  if (!text) return;
+  const timestamp = new Date().toLocaleString("he-IL");
+  leads = leads.map(l => l.id === id ? { ...l, notes:[`${timestamp}: ${text}`, ...l.notes], lastAction:"נוספה הערה חדשה" } : l);
+  save();
+  render();
+}
+function sendWhatsapp(id) {
+  const timestamp = new Date().toLocaleString("he-IL");
+  leads = leads.map(l => l.id === id ? { ...l, notes:[`${timestamp}: נשלחה הודעת וואטסאפ ללקוח`, ...l.notes], lastAction:"נשלחה הודעת וואטסאפ", status:l.status === "חדש" ? "בטיפול" : l.status } : l);
+  save();
+  render();
+}
+function closeLead(id) {
+  updateLead(id, { status:"נסגר / נמכר", saleAmount:3500, lastAction:"סומן כנסגר" });
+}
+function addLead() {
+  const fullName = document.getElementById("newFullName").value.trim();
+  const phone = document.getElementById("newPhone").value.trim();
+  if (!fullName || !phone) return alert("צריך שם וטלפון");
+  const activeWorkers = workers.filter(w => w.active);
+  const assigned = activeWorkers[nextWorkerIndex % activeWorkers.length];
+  nextWorkerIndex++;
+  const id = "L-" + (1001 + leads.length);
+  leads = [{
+    id,
+    fullName,
+    phone,
+    email: document.getElementById("newEmail").value.trim(),
+    city: document.getElementById("newCity").value.trim(),
+    source: LEAD_SOURCE,
+    product: document.getElementById("newProduct").value.trim() || "לא צוין",
+    status:"חדש",
+    ownerId: assigned.id,
+    createdAt: today,
+    followUpAt: today,
+    notes:[`ליד חדש נוסף וחולק אוטומטית אל ${assigned.name}`],
+    lastAction:"ליד חדש נכנס מהטופס",
+    saleAmount:0
+  }, ...leads];
+  selectedLeadId = id;
+  save();
+  renderLeads();
+}
+function renderFollowups() {
+  const items = leads.filter(l => l.followUpAt && l.status !== "נסגר / נמכר").sort((a,b) => a.followUpAt.localeCompare(b.followUpAt));
+  document.getElementById("followups").innerHTML = `
+    <div class="card glass">
+      <div class="section-head">
+        <div>
+          <h3>תזכורות לחזרה ללקוחות</h3>
+          <div class="muted tiny">מעקב מהיר אחרי Follow-ups</div>
+        </div>
+      </div>
+      <div class="lead-list">
+        ${items.length ? items.map(l => `
+          <div class="lead-row">
+            <div class="row-title">${escapeHtml(l.fullName)} <span class="${pillClass(l.status)}">${l.status}</span></div>
+            <div class="row-meta">לחזור בתאריך ${formatDate(l.followUpAt)} · מטפל: ${getWorkerName(l.ownerId)}</div>
+            <button class="btn btn-secondary" style="margin-top:10px" onclick="selectedLeadId='${l.id}';showScreen('leads')">פתיחת ליד</button>
+          </div>
+        `).join("") : `<div class="empty">אין תזכורות פתוחות</div>`}
+      </div>
+    </div>`;
+}
+function renderTasks() {
+  const statusFilter = document.getElementById("taskStatusFilter")?.value || "הכל";
+  const ownerFilter = document.getElementById("taskOwnerFilter")?.value || "הכל";
+  const filtered = tasks
+    .filter(t => statusFilter === "הכל" || t.status === statusFilter)
+    .filter(t => ownerFilter === "הכל" || t.ownerId === ownerFilter)
+    .sort((a,b) => a.dueDate.localeCompare(b.dueDate));
+  const tm = taskMetrics();
+
+  document.getElementById("tasks").innerHTML = `
+    <div class="tasks-layout">
+      <div class="card glass">
+        <div class="section-head">
+          <div>
+            <h3>יצירת משימה חדשה</h3>
+            <div class="muted tiny">שיוך לעובד, לליד ולתאריך יעד</div>
+          </div>
+          <span class="small-badge">Task Flow</span>
+        </div>
+        <div class="worker-list">
+          <input id="taskTitle" placeholder="כותרת משימה">
+          <textarea id="taskDescription" placeholder="פירוט המשימה"></textarea>
+          <div class="form-grid">
+            <label>אחראי
+              <select id="taskOwner">${workers.map(w => `<option value="${w.id}">${w.name}</option>`).join("")}</select>
+            </label>
+            <label>עדיפות
+              <select id="taskPriority"><option>נמוכה</option><option selected>בינונית</option><option>גבוהה</option></select>
+            </label>
+            <label>ליד מקושר
+              <select id="taskLead"><option value="">ללא ליד מקושר</option>${leads.map(l => `<option value="${l.id}">${escapeHtml(l.fullName)}</option>`).join("")}</select>
+            </label>
+            <label>תאריך יעד
+              <input id="taskDueDate" type="date" value="${today}">
+            </label>
+          </div>
+          <button class="btn btn-primary" onclick="addTask()">הוספת משימה</button>
+        </div>
+        <div class="stats" style="grid-template-columns:repeat(3,1fr); margin-top:16px">
+          ${stat("כל המשימות", tm.total)}
+          ${stat("פתוחות", tm.open)}
+          ${stat("הושלמו", tm.completed)}
+        </div>
+      </div>
+
+      <div class="card glass">
+        <div class="section-head">
+          <div>
+            <h3>רשימת משימות</h3>
+            <div class="muted tiny">מעקב לפי אחראי, סטטוס ודדליין</div>
+          </div>
+          <div class="top-actions">
+            <select id="taskStatusFilter" onchange="renderTasks()"><option>הכל</option><option ${statusFilter==="פתוחה"?"selected":""}>פתוחה</option><option ${statusFilter==="בתהליך"?"selected":""}>בתהליך</option><option ${statusFilter==="הושלמה"?"selected":""}>הושלמה</option></select>
+            <select id="taskOwnerFilter" onchange="renderTasks()"><option value="הכל">כל העובדים</option>${workers.map(w => `<option value="${w.id}" ${ownerFilter===w.id?"selected":""}>${w.name}</option>`).join("")}</select>
+          </div>
+        </div>
+
+        <div class="task-list">
+          ${filtered.length ? filtered.map(t => `
+            <div class="task-row">
+              <div class="row-title">${escapeHtml(t.title)} <span class="${pillClass(t.status)}">${t.status}</span> <span class="pill">עדיפות ${t.priority}</span></div>
+              ${t.description ? `<div class="row-meta">${escapeHtml(t.description)}</div>` : ""}
+              <div class="row-meta">אחראי: ${getWorkerName(t.ownerId)} · ליד: ${getLeadName(t.relatedLeadId)} · יעד: ${formatDate(t.dueDate)}</div>
+              <div class="top-actions" style="margin-top:10px">
+                <select onchange="updateTask('${t.id}', {status:this.value})"><option ${t.status==="פתוחה"?"selected":""}>פתוחה</option><option ${t.status==="בתהליך"?"selected":""}>בתהליך</option><option ${t.status==="הושלמה"?"selected":""}>הושלמה</option></select>
+                <button class="btn btn-secondary" onclick="updateTask('${t.id}', {status:'הושלמה'})">סמן כהושלמה</button>
+              </div>
+            </div>
+          `).join("") : `<div class="empty">אין משימות להצגה</div>`}
+        </div>
+      </div>
+    </div>`;
+}
+function addTask() {
+  const title = document.getElementById("taskTitle").value.trim();
+  if (!title) return alert("צריך כותרת משימה");
+  tasks = [{
+    id: "T-" + (2001 + tasks.length),
+    title,
+    description: document.getElementById("taskDescription").value.trim(),
+    ownerId: document.getElementById("taskOwner").value,
+    relatedLeadId: document.getElementById("taskLead").value,
+    status: "פתוחה",
+    priority: document.getElementById("taskPriority").value,
+    dueDate: document.getElementById("taskDueDate").value || today,
+    createdAt: today
+  }, ...tasks];
+  save();
+  renderTasks();
+}
+function updateTask(id, changes) {
+  tasks = tasks.map(t => t.id === id ? { ...t, ...changes } : t);
+  save();
+  render();
+}
+function renderReports() {
+  const m = metrics();
+  document.getElementById("reports").innerHTML = `
+    <div class="grid-2">
+      <div class="card glass">
+        <h3>דוח יומי</h3>
+        <div class="stats" style="grid-template-columns:repeat(2, minmax(0,1fr))">
+          ${stat("לידים היום", m.incomingToday)}
+          ${stat("סגירות", m.closed)}
+          ${stat("דורשים טיפול", m.dueFollowups)}
+          ${stat("פתוחים", m.open)}
+        </div>
+      </div>
+      <div class="card glass">
+        <h3>דוח לפי מקור ליד</h3>
+        <div class="lead-row">
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px"><b>טופס - דר אירית שחם</b><b>${leads.length} לידים</b></div>
+          <div class="row-meta">סגירות: <b>${m.closed}</b></div>
+          <div class="row-meta">אחוז המרה: <b>${m.conversionRate}%</b></div>
+          <div class="row-meta">מכירות: <b>₪${m.totalSales.toLocaleString("he-IL")}</b></div>
+        </div>
+      </div>
+    </div>`;
+}
+function renderTeam() {
+  document.getElementById("team").innerHTML = `
+    <div class="card glass">
+      <div class="section-head">
+        <div>
+          <h3>11 עובדים והרשאות בסיסיות</h3>
+          <div class="muted tiny">מבוסס על התפקידים שהוגדרו באפליקציה</div>
+        </div>
+      </div>
+      <div class="stats" style="grid-template-columns:repeat(3, minmax(0,1fr))">
+        ${workers.map(w => `
+          <div class="worker-row">
+            <div class="row-title">${w.name}</div>
+            <div class="row-meta">${w.role}</div>
+            <div class="row-meta">צפייה: כל הלידים</div>
+            <div class="row-meta">עריכה: לפי הרשאה</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>`;
+}
+function resetDemo() {
+  if (!confirm("לאפס את נתוני הדמו?")) return;
+  leads = structuredClone(initialLeads);
+  tasks = structuredClone(initialTasks);
+  selectedLeadId = leads[0]?.id || "";
+  nextWorkerIndex = 9;
+  save();
+  render();
+}
+function render() {
+  renderDashboard();
+  renderLeads();
+  renderFollowups();
+  renderTasks();
+  renderReports();
+  renderTeam();
+  document.querySelectorAll(".screen").forEach(el => el.classList.toggle("active", el.id === activeScreen));
+}
+themeInit();
+render();
+</script>
+</body>
+</html>
