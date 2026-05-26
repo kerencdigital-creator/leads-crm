@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ניהול לידים ומכירות - v34</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Open Sans", Arial, sans-serif;
+      background: #f5f7fa;
+      color:#0f172a;
+      font-weight: 300;
+      letter-spacing: -0.015em;
+    }
+    button, input, select, textarea { font-family: inherit; font-weight: 300; }
+    h1,h2,h3,h4,h5,b,.font-bold,.font-extrabold,.font-semibold { font-weight: 600 !important; letter-spacing: -0.025em; }
+    .app-bg {
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(229,234,240,.9), transparent 24%),
+        radial-gradient(circle at 86% 10%, rgba(244,247,250,.95), transparent 30%),
+        linear-gradient(135deg,#f8fafc 0%,#eef2f6 46%,#ffffff 100%);
+    }
+    .glass,
+    .soft-card,
+    aside,
+    .modal-box {
+      background: linear-gradient(145deg, rgba(255,255,255,.90), rgba(248,250,252,.84));
+      border: 1px solid rgba(213,220,230,.92);
+      box-shadow: 0 24px 70px rgba(55,65,81,.10), inset 0 1px 0 rgba(255,255,255,.92);
+      backdrop-filter: blur(22px);
+      color:#111827;
+    }
+    .soft-input,
+    input,
+    select,
+    textarea {
+      border:1px solid rgba(205,217,235,.95);
+      background:rgba(255,255,255,.74);
+      border-radius: 20px;
+      padding: 12px 14px;
+      width:100%;
+      outline:none;
+      transition:.2s;
+      color:#111827;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.78), 0 9px 24px rgba(31,41,55,.045);
+    }
+    .soft-input:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color:#9db8ff;
+      box-shadow:0 0 0 4px rgba(127,162,255,.13), inset 0 1px 0 rgba(255,255,255,.86);
+    }
+    .primary,
+    button.primary,
+    .btn.primary {
+      background: linear-gradient(135deg,#eef4ff 0%,#dce7ff 52%,#a9c1ff 100%);
+      color:#1f2937;
+      border:1px solid rgba(196,213,255,.95);
+      border-radius:20px;
+      padding:12px 18px;
+      font-weight:600;
+      box-shadow:0 16px 36px rgba(107,124,160,.15), inset 0 1px 0 rgba(255,255,255,.92);
+    }
+    .primary:hover,
+    button.primary:hover,
+    .btn.primary:hover { filter: brightness(1.015); transform: translateY(-1px); }
+    .ghost,
+    .btn,
+    button.ghost {
+      background:rgba(255,255,255,.76);
+      color:#334155;
+      border:1px solid rgba(213,220,230,.95);
+      border-radius:20px;
+      padding:12px 18px;
+      font-weight:600;
+      box-shadow:0 14px 34px rgba(55,65,81,.075), inset 0 1px 0 rgba(255,255,255,.9);
+      backdrop-filter: blur(16px);
+    }
+    .blue-pill {
+      background: linear-gradient(135deg,#eef4ff,#a9c2ff);
+      color:#253449;
+      border:1px solid #c7d7ff;
+      box-shadow:0 12px 30px rgba(107,124,160,.12);
+    }
+    .clickable { cursor:pointer; transition:.2s; }
+    .clickable:hover { transform: translateY(-2px); box-shadow:0 18px 42px rgba(55,65,81,.12); }
+    .status { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:5px 11px; font-weight:600; font-size:12px; border:1px solid transparent; white-space:nowrap; }
+    .table-wrap { overflow:auto; border-radius:28px; border:1px solid rgba(213,220,230,.92); background:rgba(255,255,255,.72); }
+    .modal-scroll { max-height: 92vh; overflow:auto; }
+    .bg-blue-400 { background: linear-gradient(90deg,#7fa2ff 0%,#a8bfff 44%,#d6e1ff 100%) !important; box-shadow:0 0 18px rgba(127,162,255,.22); }
+    .bg-white,.bg-slate-50,.bg-slate-100,.bg-slate-200 {
+      background: linear-gradient(145deg, rgba(255,255,255,.88), rgba(248,250,252,.82)) !important;
+      border-color: rgba(213,220,230,.82) !important;
+    }
+
+    .theme-dark {
+      background:
+        radial-gradient(circle at 16% 6%, rgba(103,126,170,.20), transparent 27%),
+        radial-gradient(circle at 84% 15%, rgba(148,163,184,.10), transparent 30%),
+        linear-gradient(135deg,#141821 0%,#24272d 48%,#111827 100%) !important;
+      color:#f4f7fb !important;
+    }
+    .theme-dark .glass,
+    .theme-dark .soft-card,
+    .theme-dark aside,
+    .theme-dark .modal-box,
+    .theme-dark .bg-white,
+    .theme-dark .bg-slate-50,
+    .theme-dark .bg-slate-100,
+    .theme-dark .bg-slate-200,
+    .theme-dark [class*="bg-white"],
+    .theme-dark [class*="bg-slate-50"],
+    .theme-dark [class*="bg-slate-100"],
+    .theme-dark [class*="bg-slate-200"] {
+      background: linear-gradient(145deg, #262a33 0%, #1e222b 100%) !important;
+      color:#f8fafc !important;
+      border-color: rgba(255,255,255,.085) !important;
+      box-shadow: 0 24px 70px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.055) !important;
+      backdrop-filter: blur(18px);
+    }
+    .theme-dark .soft-input,
+    .theme-dark input,
+    .theme-dark select,
+    .theme-dark textarea {
+      background:#20242d !important;
+      color:#f8fafc !important;
+      border-color:rgba(255,255,255,.13) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 12px 30px rgba(0,0,0,.18) !important;
+    }
+    .theme-dark input::placeholder,
+    .theme-dark textarea::placeholder { color:#aab1bf !important; }
+    .theme-dark .ghost,
+    .theme-dark .btn,
+    .theme-dark button.ghost {
+      background:linear-gradient(145deg,#2a2e38 0%,#20242d 100%) !important;
+      color:#e5e7eb !important;
+      border-color:rgba(255,255,255,.10) !important;
+      box-shadow:0 16px 38px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.05) !important;
+    }
+    .theme-dark .primary,
+    .theme-dark button.primary,
+    .theme-dark .btn.primary,
+    .theme-dark .blue-pill {
+      background:linear-gradient(135deg,#eef4ff 0%,#dce7ff 50%,#adc5ff 100%) !important;
+      color:#1f2937 !important;
+      border:1px solid rgba(210,224,255,.90) !important;
+      box-shadow:0 16px 40px rgba(116,150,230,.24), inset 0 1px 0 rgba(255,255,255,.86) !important;
+    }
+    .theme-dark .text-slate-950,
+    .theme-dark .text-slate-900,
+    .theme-dark .text-slate-800,
+    .theme-dark .text-slate-700,
+    .theme-dark h1,
+    .theme-dark h2,
+    .theme-dark h3,
+    .theme-dark h4,
+    .theme-dark h5,
+    .theme-dark b,
+    .theme-dark .font-bold,
+    .theme-dark .font-extrabold,
+    .theme-dark .font-semibold { color:#f8fafc !important; }
+    .theme-dark .text-slate-600,
+    .theme-dark .text-slate-500,
+    .theme-dark .text-slate-400,
+    .theme-dark .text-slate-300,
+    .theme-dark p,
+    .theme-dark span,
+    .theme-dark td,
+    .theme-dark th { color:#c8cdd7 !important; }
+    .theme-dark .bg-blue-400 { background:linear-gradient(90deg,#8eb0ff 0%,#cddcff 100%) !important; box-shadow:0 0 22px rgba(150,180,255,.30); }
+    .theme-dark .rounded-3xl:not(.primary):not(.blue-pill),
+    .theme-dark .rounded-\[2rem\] {
+      border-color: rgba(255,255,255,.085) !important;
+    }
+    .theme-dark .table-wrap,
+    .theme-dark table,
+    .theme-dark thead,
+    .theme-dark tbody,
+    .theme-dark tr,
+    .theme-dark td,
+    .theme-dark th {
+      background: linear-gradient(145deg, #262a33 0%, #1e222b 100%) !important;
+      color:#f8fafc !important;
+      border-color:rgba(255,255,255,.08) !important;
+    }
+    @media (max-width: 980px) {
+      .layout { flex-direction: column; }
+      aside { width:100% !important; position:static !important; min-height:auto !important; }
+      main { padding:16px !important; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useMemo, useState, useEffect } = React;
+
+const today = "2026-05-23";
+const LEAD_SOURCE = "טופס - דר אירית שחם";
+const clientStatuses = ["חדש", "בטיפול", "לא ענה", "לחזור אליו", "שיחה נקבעה", "נסגר / נמכר", "לא רלוונטי"];
+const clientTaskTypes = ["לתת הצעת מחיר", "לקבוע פגישה אחד על אחד", "להזמין להדרכה"];
+const employeeTaskTypes = ["משימה כללית", "משימת גרפיקה", "משימת שיווק", "משימת תוכן", "משימת אתר", "משימת גביה", "משימת לוגיסטיקה", "אחר"];
+const taskStatuses = ["פתוחה", "משימה בטיפול", "משימה הושלמה"];
+const taskOnlyWorkerIds = ["w-0","w-6","w-7","w-8"];
+
+const workers = [
+  { id:"manager", name:"מנהל/ת לידים", role:"מנהל לידים", isManager:true },
+  { id:"w-0", name:"שגיא", role:"גרפיקה", taskOnly:true },
+  { id:"w-1", name:"לואיזה", role:"מכירות" },
+  { id:"w-2", name:"דניאל", role:"מכירות" },
+  { id:"w-3", name:"ליהי", role:"מכירות" },
+  { id:"w-4", name:"נלי", role:"מדריכה ומכירות" },
+  { id:"w-5", name:"אורית", role:"מנהלת משרד ומכירות" },
+  { id:"w-6", name:"שילי", role:"מנהלת שיווק", taskOnly:true },
+  { id:"w-7", name:"שני", role:"יוצרת תוכן", taskOnly:true },
+  { id:"w-8", name:"קרן", role:"אתרים", taskOnly:true },
+  { id:"w-9", name:"חוה", role:"לוגיסטיקה" },
+  { id:"w-10", name:"גיירן", role:"גביה" },
+];
+
+const initialClients = [
+  {
+    id:"C-1001", fullName:"לירון כהן", phone:"054-2095258", email:"", city:"רמת השרון", source:LEAD_SOURCE,
+    product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-1", createdAt:"2026-05-19", followUpAt:"2026-05-23",
+    saleAmount:0, lastAction:"ליד חדש מהטופס",
+    actions:[{id:"A-1", userId:"w-1", type:"קליטת ליד", text:"התקבל מהטופס בתאריך 19.05.2026 בשעה 17:18", date:"2026-05-19"}],
+    reports:[{id:"R-1", userId:"w-1", text:"צריך לחזור ולתאם שיחה.", date:"2026-05-19"}],
+    tasks:[{id:"CT-1", type:"לקבוע פגישה אחד על אחד", status:"פתוחה", ownerId:"w-1", dueDate:"2026-05-23", note:"לתאם שיחת התאמה"}],
+  },
+  {
+    id:"C-1002", fullName:"ורד מויאל", phone:"050-3822203", email:"", city:"רמת השרון", source:LEAD_SOURCE,
+    product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-2", createdAt:"2026-05-19", followUpAt:"2026-05-23",
+    saleAmount:0, lastAction:"ליד חדש מהטופס",
+    actions:[{id:"A-2", userId:"w-2", type:"קליטת ליד", text:"התקבל מהטופס בתאריך 19.05.2026 בשעה 18:54", date:"2026-05-19"}],
+    reports:[], tasks:[{id:"CT-2", type:"לתת הצעת מחיר", status:"משימה בטיפול", ownerId:"w-2", dueDate:"2026-05-23", note:"לשלוח הצעה אחרי בירור צרכים"}],
+  },
+  { id:"C-1003", fullName:"לימור מלא בן הרוש", phone:"050-9447890", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"פגישת ייעוץ כללית", status:"חדש", ownerId:"w-3", createdAt:"2026-05-19", followUpAt:"2026-05-23", saleAmount:0, lastAction:"ליד חדש מהטופס", actions:[], reports:[], tasks:[] },
+  { id:"C-1004", fullName:"גילת לוין", phone:"050-7450967", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-4", createdAt:"2026-05-20", followUpAt:"2026-05-23", saleAmount:0, lastAction:"ליד חדש מהטופס", actions:[], reports:[], tasks:[] },
+  {
+    id:"C-1005", fullName:"איילה כהן", phone:"050-6286609", email:"", city:"רמת השרון", source:LEAD_SOURCE,
+    product:"טיפולי מרקם עור - פילינגים", status:"נסגר / נמכר", ownerId:"w-5", createdAt:"2026-05-23", saleDate:"2026-05-23",
+    followUpAt:"2026-05-23", saleAmount:3200, lastAction:"נסגרה עסקה",
+    actions:[
+      {id:"A-5", userId:"w-5", type:"שיחת מכירה", text:"בוצעה שיחה, הלקוחה התעניינה בטיפול ראשון", date:"2026-05-23"},
+      {id:"A-6", userId:"w-5", type:"הצעת מחיר", text:"נשלחה הצעת מחיר בסך 3,200 ש״ח", date:"2026-05-23"},
+      {id:"A-7", userId:"w-5", type:"סגירה", text:"הלקוחה אישרה וסגרה טיפול", date:"2026-05-23"},
+    ],
+    reports:[{id:"R-5", userId:"w-5", text:"הלקוחה אישרה טיפול ראשון. נקבעה פגישה.", date:"2026-05-23"}],
+    tasks:[{id:"CT-5", type:"לקבוע פגישה אחד על אחד", status:"משימה הושלמה", ownerId:"w-5", dueDate:"2026-05-23", note:"נקבעה פגישה"}],
+  },
+  { id:"C-1006", fullName:"מיכל בידאני", phone:"052-6958897", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-1", createdAt:"2026-05-23", followUpAt:"2026-05-23", saleAmount:0, lastAction:"ליד חדש מהטופס", actions:[], reports:[], tasks:[] },
+  { id:"C-1007", fullName:"מיכל מלכה", phone:"054-9987799", email:"", city:"רמת השרון", source:LEAD_SOURCE, product:"טיפולי מרקם עור - פילינגים", status:"חדש", ownerId:"w-2", createdAt:"2026-05-23", followUpAt:"2026-05-23", saleAmount:0, lastAction:"ליד חדש מהטופס", actions:[], reports:[], tasks:[] },
+];
+
+const initialStandaloneTasks = [
+  { id:"ET-1", type:"להכין גרפיקה לקמפיין", status:"פתוחה", ownerId:"w-0", dueDate:today, note:"משימה פנימית ללא לקוח מקושר" },
+  { id:"ET-2", type:"בדיקת חומר שיווקי", status:"משימה בטיפול", ownerId:"w-6", dueDate:today, note:"משימה פנימית לשיווק" },
+  { id:"ET-3", type:"עדכון תוכן", status:"פתוחה", ownerId:"w-7", dueDate:today, note:"משימה פנימית לתוכן" },
+  { id:"ET-4", type:"עדכון אתר", status:"פתוחה", ownerId:"w-8", dueDate:today, note:"משימה פנימית לאתרים" },
+];
+
+function isTaskOnlyWorker(id){ return taskOnlyWorkerIds.includes(id); }
+function clientEnabledWorkers(){ return workers.filter(w => !w.isManager && !isTaskOnlyWorker(w.id)); }
+function getWorkerName(id){ return workers.find(w => w.id === id)?.name || "לא משויך"; }
+function formatDate(d){ if(!d) return "—"; return new Date(d+"T00:00:00").toLocaleDateString("he-IL"); }
+function normalizePhone(phone){
+  const digits = String(phone || "").replace(/[^0-9]/g,"");
+  if(!digits) return "";
+  if(digits.startsWith("972")) return digits;
+  if(digits.startsWith("0")) return "972" + digits.slice(1);
+  return digits;
+}
+function statusClass(status){
+  const map = {
+    "חדש":"bg-blue-50 text-blue-700 border-blue-100",
+    "בטיפול":"bg-amber-50 text-amber-700 border-amber-100",
+    "לא ענה":"bg-orange-50 text-orange-700 border-orange-100",
+    "לחזור אליו":"bg-purple-50 text-purple-700 border-purple-100",
+    "שיחה נקבעה":"bg-cyan-50 text-cyan-700 border-cyan-100",
+    "נסגר / נמכר":"bg-emerald-50 text-emerald-700 border-emerald-100",
+    "לא רלוונטי":"bg-slate-100 text-slate-600 border-slate-200",
+  };
+  return map[status] || "bg-slate-100 text-slate-700 border-slate-200";
+}
+function Pill({children, status}){ return <span className={"status " + (status ? statusClass(status) : "bg-slate-100 text-slate-700")}>{children}</span> }
+function IconBox({children}){ return <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">{children}</div> }
+function Card({children, className=""}){ return <div className={"soft-card rounded-[28px] " + className}>{children}</div> }
+function Input(props){ return <input {...props} className={"soft-input " + (props.className || "")} /> }
+function Textarea(props){ return <textarea {...props} className={"soft-input min-h-[90px] " + (props.className || "")} /> }
+function Select(props){ return <select {...props} className={"soft-input " + (props.className || "")}>{props.children}</select> }
+function Button({children, variant="primary", className="", ...props}){ return <button {...props} className={(variant === "ghost" ? "ghost " : "primary ") + className}>{children}</button> }
+
+function ThemeToggle({dark, setDark}){
+  return (
+    <button type="button" onClick={() => setDark(!dark)} className="ghost flex items-center gap-3">
+      <span className="relative block h-8 w-16 rounded-full border border-slate-300 bg-white/70">
+        <span className={"absolute top-1 h-6 w-6 rounded-full shadow-md transition-all " + (dark ? "right-1 bg-slate-800" : "left-1 bg-slate-300")}></span>
+      </span>
+      <span className="text-right leading-tight">
+        <span className="block font-bold">Light / Dark</span>
+        <span className="block text-xs text-slate-500">{dark ? "Dark פעיל" : "Light פעיל"}</span>
+      </span>
+    </button>
+  );
+}
+
+function StatCard({title,value,subtitle,onClick,icon="✓"}){
+  return (
+    <button onClick={onClick} type="button" className="text-right clickable w-full">
+      <Card className="p-5 h-full">
+        <div className="flex justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-slate-500">{title}</p>
+            <p className="mt-2 text-3xl font-extrabold">{value}</p>
+            {subtitle && <p className="mt-1 text-xs text-slate-500">{subtitle}</p>}
+          </div>
+          <IconBox>{icon}</IconBox>
+        </div>
+      </Card>
+    </button>
+  )
+}
+
+function SidebarButton({active, children, onClick, icon}){
+  return (
+    <button type="button" onClick={onClick} className={"flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-bold transition " + (active ? "primary" : "text-slate-600 hover:bg-slate-100")}>
+      <span>{icon}</span><span>{children}</span>
+    </button>
+  )
+}
+
+function EmptyState({title, subtitle}){
+  return <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-center"><h3 className="font-bold text-lg">{title}</h3><p className="text-sm text-slate-500 mt-1">{subtitle}</p></div>
+}
+
+function App(){
+  const [dark, setDark] = useState(() => localStorage.getItem("crm-dark") === "yes");
+  const [activeScreen,setActiveScreen] = useState("dashboard");
+  const [activeUserId,setActiveUserId] = useState("manager");
+  const [salesDateFilter,setSalesDateFilter] = useState(today);
+  const [clients,setClients] = useState(() => {
+    const saved = localStorage.getItem("crm-clients-v31");
+    return saved ? JSON.parse(saved) : initialClients;
+  });
+  const [standaloneTasks,setStandaloneTasks] = useState(() => {
+    const saved = localStorage.getItem("crm-tasks-v31");
+    return saved ? JSON.parse(saved) : initialStandaloneTasks;
+  });
+  const [selectedClientId,setSelectedClientId] = useState(initialClients[0].id);
+  const [query,setQuery] = useState("");
+  const [statusFilter,setStatusFilter] = useState("הכל");
+  const [ownerFilter,setOwnerFilter] = useState("הכל");
+  const [newClient,setNewClient] = useState({fullName:"",phone:"",email:"",city:"",product:""});
+  const [bulkText,setBulkText] = useState("");
+  const [newAction,setNewAction] = useState("");
+  const [newReport,setNewReport] = useState("");
+  const [newClientTask,setNewClientTask] = useState({type:clientTaskTypes[0], ownerId:"", dueDate:today, note:""});
+  const [selectedWorkerPanelId,setSelectedWorkerPanelId] = useState("");
+  const [workerPanelTab,setWorkerPanelTab] = useState("clients");
+  const [workerPanelClientId,setWorkerPanelClientId] = useState("");
+  const [workerTaskStatusFilter,setWorkerTaskStatusFilter] = useState("הכל");
+  const [workerTaskDraft,setWorkerTaskDraft] = useState({clientId:"", type:clientTaskTypes[0], dueDate:today, note:""});
+  const [workerNewClient,setWorkerNewClient] = useState({fullName:"", phone:"", email:"", city:"", product:""});
+  const [workerBulkText,setWorkerBulkText] = useState("");
+
+  useEffect(()=> localStorage.setItem("crm-clients-v31", JSON.stringify(clients)), [clients]);
+  useEffect(()=> localStorage.setItem("crm-tasks-v31", JSON.stringify(standaloneTasks)), [standaloneTasks]);
+  useEffect(()=> localStorage.setItem("crm-dark", dark ? "yes" : "no"), [dark]);
+
+  const activeUser = workers.find(w => w.id === activeUserId) || workers[0];
+  const isManager = !!activeUser.isManager;
+
+  const navigateTo = screen => { setActiveScreen(screen); window.scrollTo({top:0,behavior:"smooth"}); };
+  const visibleClients = useMemo(() => {
+    if(!isManager && isTaskOnlyWorker(activeUserId)) return [];
+    return isManager ? clients : clients.filter(c => c.ownerId === activeUserId);
+  }, [isManager, activeUserId, clients]);
+
+  const selectedClient = clients.find(c => c.id === selectedClientId) || visibleClients[0] || clients[0];
+
+  const filteredClients = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return visibleClients.filter(c => {
+      const matchesQ = !q || c.fullName.toLowerCase().includes(q) || c.phone.includes(q) || c.city.toLowerCase().includes(q) || (c.email||"").toLowerCase().includes(q);
+      const matchesStatus = statusFilter === "הכל" || c.status === statusFilter;
+      const matchesOwner = !isManager || ownerFilter === "הכל" || c.ownerId === ownerFilter;
+      return matchesQ && matchesStatus && matchesOwner;
+    });
+  }, [visibleClients, query, statusFilter, ownerFilter, isManager]);
+
+  const flatTasks = useMemo(() => {
+    const clientTasks = clients.flatMap(c => c.tasks.map(t => ({...t, clientId:c.id, clientName:c.fullName, standalone:false})));
+    const internal = standaloneTasks.map(t => ({...t, clientId:"", clientName:"ללא לקוח מקושר", standalone:true}));
+    return [...clientTasks, ...internal];
+  }, [clients, standaloneTasks]);
+
+  const taskMatches = (task, filter) => filter === "הכל" ? true : filter === "פתוחות" ? task.status !== "משימה הושלמה" : task.status === filter;
+
+  const visibleTasks = useMemo(() => {
+    const base = isManager ? flatTasks : flatTasks.filter(t => t.ownerId === activeUserId);
+    return base;
+  }, [isManager, flatTasks, activeUserId]);
+
+  const reports = useMemo(() => clients.flatMap(c => c.reports.map(r => ({...r, clientId:c.id, clientName:c.fullName}))), [clients]);
+  const visibleReports = isManager ? reports : reports.filter(r => r.userId === activeUserId);
+
+  const metrics = useMemo(() => {
+    const closedByDate = visibleClients.filter(c => c.status === "נסגר / נמכר" && (c.saleDate || c.createdAt) === salesDateFilter);
+    const closedToday = visibleClients.filter(c => c.status === "נסגר / נמכר" && (c.saleDate || c.createdAt) === today);
+    return {
+      salesToday: closedToday.reduce((s,c)=>s+Number(c.saleAmount||0),0),
+      salesByDate: closedByDate.reduce((s,c)=>s+Number(c.saleAmount||0),0),
+      closedByDate: closedByDate.length,
+      clientsTotal: visibleClients.length,
+      openTasks: visibleTasks.filter(t=>t.status !== "משימה הושלמה").length,
+      completedTasks: visibleTasks.filter(t=>t.status === "משימה הושלמה").length,
+      reportsTotal: visibleReports.length,
+    }
+  }, [visibleClients, visibleTasks, visibleReports, salesDateFilter]);
+
+  const workerStats = useMemo(() => workers.filter(w=>!w.isManager).map(w => {
+    const workerClients = isTaskOnlyWorker(w.id) ? [] : clients.filter(c=>c.ownerId === w.id);
+    const workerTasks = flatTasks.filter(t=>t.ownerId === w.id);
+    return {
+      ...w,
+      clientsTotal: workerClients.length,
+      revenue: workerClients.filter(c=>c.status==="נסגר / נמכר").reduce((s,c)=>s+Number(c.saleAmount||0),0),
+      salesByDate: workerClients.filter(c=>c.status==="נסגר / נמכר" && (c.saleDate || c.createdAt) === salesDateFilter).reduce((s,c)=>s+Number(c.saleAmount||0),0),
+      openTasks: workerTasks.filter(t=>t.status !== "משימה הושלמה").length,
+      inProgressTasks: workerTasks.filter(t=>t.status === "משימה בטיפול").length,
+      completedTasks: workerTasks.filter(t=>t.status === "משימה הושלמה").length,
+      reportsTotal: reports.filter(r=>r.userId === w.id).length,
+    }
+  }), [clients, flatTasks, reports, salesDateFilter]);
+
+  const statusStats = clientStatuses.map(status => ({status, count: visibleClients.filter(c=>c.status === status).length}));
+  const bestWorker = [...workerStats].sort((a,b)=> (b.revenue + b.clientsTotal*10 + b.completedTasks*5) - (a.revenue + a.clientsTotal*10 + a.completedTasks*5))[0];
+
+  function setClient(id, changes){ setClients(prev => prev.map(c => c.id === id ? {...c, ...changes} : c)); }
+  function updateClientField(id, field, value){ setClients(prev => prev.map(c => c.id === id ? {...c, [field]:value} : c)); }
+
+  function addClient(ownerIdArg){
+    if(isTaskOnlyWorker(activeUserId) && !ownerIdArg) return;
+    if(!newClient.fullName.trim() || !newClient.phone.trim()) return;
+    const owner = ownerIdArg || (isManager ? clientEnabledWorkers()[clients.length % clientEnabledWorkers().length].id : activeUserId);
+    const client = {
+      id:"C-"+Date.now(), fullName:newClient.fullName.trim(), phone:newClient.phone.trim(), email:newClient.email.trim(), city:newClient.city.trim(),
+      product:newClient.product.trim() || "לא צוין", source:"הקלדה ידנית", status:"חדש", ownerId:owner, createdAt:today, followUpAt:today, saleAmount:0,
+      lastAction:"לקוח נוסף ידנית", actions:[{id:"A-"+Date.now(), userId:activeUserId, type:"יצירת לקוח", text:"לקוח נוסף ידנית", date:today}], reports:[], tasks:[]
+    };
+    setClients([client, ...clients]); setSelectedClientId(client.id); setNewClient({fullName:"",phone:"",email:"",city:"",product:""}); navigateTo("clients");
+  }
+
+  function loadBulkClients(ownerIdArg, textArg){
+    const text = textArg ?? bulkText;
+    const rows = text.replaceAll("\r","").split("\n").map(r=>r.trim()).filter(Boolean);
+    if(!rows.length) return;
+    const salesWorkers = clientEnabledWorkers();
+    const created = rows.map((row, i) => {
+      const [fullName="", phone="", city="", email="", product=""] = row.replaceAll("\t",",").split(",").map(x=>x.trim());
+      const owner = ownerIdArg || (isManager ? salesWorkers[(clients.length + i) % salesWorkers.length].id : activeUserId);
+      return { id:"C-"+Date.now()+"-"+i, fullName:fullName || `לקוח ${i+1}`, phone, email, city, source:"טעינה מטבלה", product:product || "לא צוין", status:"חדש", ownerId:owner, createdAt:today, followUpAt:today, saleAmount:0, lastAction:"נטען מטבלה", actions:[{id:"A-"+Date.now()+"-"+i, userId:activeUserId, type:"טעינת לקוח", text:"לקוח נטען מטבלה", date:today}], reports:[], tasks:[] };
+    });
+    setClients([...created, ...clients]); setSelectedClientId(created[0].id); setBulkText(""); setWorkerBulkText("");
+  }
+
+  function addActionToClient(client = selectedClient){
+    if(!client || !newAction.trim()) return;
+    const action = {id:"A-"+Date.now(), userId:activeUserId, type:"פעולה מול לקוח", text:newAction.trim(), date:today};
+    setClient(client.id, { actions:[action, ...client.actions], lastAction:newAction.trim() });
+    setNewAction("");
+  }
+
+  function addReportToClient(client = selectedClient){
+    if(!client || !newReport.trim()) return;
+    const report = {id:"R-"+Date.now(), userId:activeUserId, text:newReport.trim(), date:today};
+    setClient(client.id, { reports:[report, ...client.reports], lastAction:"נוסף דיווח משתמש" });
+    setNewReport("");
+  }
+
+  function sendWhatsAppToClient(client){
+    const phone = normalizePhone(client.phone);
+    if(!phone) return;
+    window.open(`https://wa.me/${phone}`, "_blank", "noopener,noreferrer");
+    const action = {id:"A-"+Date.now(), userId:activeUserId, type:"WhatsApp", text:"נפתח WhatsApp ללקוח ללא הודעה מוכנה", date:today};
+    setClient(client.id, { actions:[action, ...client.actions], lastAction:"נפתח WhatsApp ללקוח", status: client.status === "חדש" ? "בטיפול" : client.status });
+  }
+
+  function addTaskToClient(client = selectedClient){
+    if(!client) return;
+    const task = { id:"CT-"+Date.now(), type:newClientTask.type, status:"פתוחה", ownerId:newClientTask.ownerId || client.ownerId, dueDate:newClientTask.dueDate || today, note:newClientTask.note.trim() };
+    setClient(client.id, { tasks:[task, ...client.tasks], lastAction:`נוספה משימה: ${task.type}` });
+    setNewClientTask({type:clientTaskTypes[0], ownerId:"", dueDate:today, note:""});
+  }
+
+  function updateClientTask(clientId, taskId, changes){
+    if(!clientId){
+      setStandaloneTasks(prev => prev.map(t => t.id === taskId ? {...t, ...changes} : t));
+      return;
+    }
+    setClients(prev => prev.map(c => c.id !== clientId ? c : {...c, tasks:c.tasks.map(t => t.id === taskId ? {...t, ...changes} : t), lastAction: changes.status ? `משימה עודכנה ל-${changes.status}` : c.lastAction}));
+  }
+
+  function openClient(clientId){ setSelectedClientId(clientId); navigateTo("clients"); }
+  function openWorkerPanel(workerId, tab="clients"){
+    const taskOnly = isTaskOnlyWorker(workerId);
+    setSelectedWorkerPanelId(workerId);
+    setWorkerPanelClientId("");
+    setWorkerPanelTab(taskOnly ? "tasks" : tab);
+    setWorkerTaskStatusFilter("הכל");
+    setWorkerTaskDraft({clientId:"", type:taskOnly ? employeeTaskTypes[0] : clientTaskTypes[0], dueDate:today, note:""});
+  }
+
+  function addWorkerTask(){
+    if(!selectedWorkerPanelId) return;
+    const task = { id:"CT-"+Date.now(), type:workerTaskDraft.type, status:"פתוחה", ownerId:selectedWorkerPanelId, dueDate:workerTaskDraft.dueDate || today, note:workerTaskDraft.note.trim() };
+    if(workerTaskDraft.clientId){
+      setClients(prev => prev.map(c => c.id === workerTaskDraft.clientId ? {...c, tasks:[task, ...c.tasks], lastAction:`נוספה משימה לעובד: ${task.type}`} : c));
+    } else {
+      setStandaloneTasks(prev => [task, ...prev]);
+    }
+    setWorkerTaskDraft({clientId:"", type:isTaskOnlyWorker(selectedWorkerPanelId) ? employeeTaskTypes[0] : clientTaskTypes[0], dueDate:today, note:""});
+  }
+
+  function downloadExcel(){
+    const escape = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const table = (title, headers, rows) => `<h2>${escape(title)}</h2><table border="1"><thead><tr>${headers.map(h=>`<th>${escape(h)}</th>`).join("")}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(c=>`<td>${escape(c)}</td>`).join("")}</tr>`).join("")}</tbody></table><br/>`;
+    const html = `<html dir="rtl"><head><meta charset="UTF-8"/></head><body>
+      ${table("לקוחות", ["שם","טלפון","עיר","מוצר","סטטוס","עובד","מכירה","פעולה אחרונה"], visibleClients.map(c=>[c.fullName,c.phone,c.city,c.product,c.status,getWorkerName(c.ownerId),c.saleAmount,c.lastAction]))}
+      ${table("משימות", ["לקוח","משימה","סטטוס","אחראי","תאריך יעד","הערה"], visibleTasks.map(t=>[t.clientName,t.type,t.status,getWorkerName(t.ownerId),formatDate(t.dueDate),t.note]))}
+      ${table("דיווחים", ["לקוח","משתמש","תאריך","דיווח"], visibleReports.map(r=>[r.clientName,getWorkerName(r.userId),formatDate(r.date),r.text]))}
+    </body></html>`;
+    const blob = new Blob([html], {type:"application/vnd.ms-excel;charset=utf-8"});
+    const url = URL.createObjectURL(blob); const a = document.createElement("a");
+    a.href = url; a.download = `crm-report-${new Date().toISOString().slice(0,10)}.xls`; a.click(); URL.revokeObjectURL(url);
+  }
+
+  function renderClientTasks(client){
+    return (
+      <div className="space-y-2">
+        {client.tasks.length === 0 && <p className="text-sm text-slate-500">אין משימות שמקושרות ללקוח הזה.</p>}
+        {client.tasks.map(task => (
+          <div key={task.id} className="rounded-2xl bg-slate-50 p-3">
+            <div className="flex flex-wrap justify-between gap-2">
+              <div>
+                <p className="font-bold">{task.type}</p>
+                <p className="text-xs text-slate-500">אחראי: {getWorkerName(task.ownerId)} · יעד: {formatDate(task.dueDate)}</p>
+                {task.note && <p className="text-sm text-slate-600">{task.note}</p>}
+              </div>
+              <Pill>{task.status}</Pill>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {taskStatuses.map(s => <Button key={s} variant="ghost" className="text-xs" onClick={()=>updateClientTask(client.id, task.id, {status:s})}>{s}</Button>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const selectedWorkerPanel = workers.find(w => w.id === selectedWorkerPanelId);
+  const selectedWorkerIsTaskOnly = selectedWorkerPanelId ? isTaskOnlyWorker(selectedWorkerPanelId) : false;
+  const workerPanelClients = selectedWorkerPanelId && !selectedWorkerIsTaskOnly ? clients.filter(c=>c.ownerId===selectedWorkerPanelId) : [];
+  const workerPanelTasks = selectedWorkerPanelId ? flatTasks.filter(t=>t.ownerId === selectedWorkerPanelId) : [];
+  const displayedWorkerPanelTasks = workerPanelTasks.filter(t=>taskMatches(t, workerTaskStatusFilter));
+  const workerPanelStats = selectedWorkerPanelId ? workerStats.find(w=>w.id===selectedWorkerPanelId) : null;
+  const workerPanelClient = workerPanelClientId ? clients.find(c=>c.id === workerPanelClientId) : null;
+
+  const rootClass = dark ? "theme-dark app-bg" : "app-bg";
+
+  return (
+    <div className={rootClass} dir="rtl">
+      <div className="layout flex min-h-screen">
+        <aside className="w-[300px] shrink-0 border-l border-slate-200 bg-white/80 p-4 lg:sticky lg:top-0 lg:h-screen">
+          <div className="mb-5 rounded-3xl bg-slate-950 p-5 text-white">
+            <p className="text-sm text-slate-300">CRM עובדים</p>
+            <h1 className="mt-1 text-2xl font-extrabold">ניהול לקוחות ומכירות</h1>
+            <p className="mt-2 text-sm text-slate-300">משתמש אישי + מנהל לידים</p>
+          </div>
+
+          <div className="mb-4 rounded-3xl bg-slate-50 p-3">
+            <ThemeToggle dark={dark} setDark={setDark} />
+            <label className="mt-4 block text-xs font-bold text-slate-500">כניסה כמשתמש</label>
+            <Select value={activeUserId} onChange={e => { setActiveUserId(e.target.value); setActiveScreen(e.target.value==="manager" ? "dashboard" : "home"); }}>
+              {workers.map(w => <option key={w.id} value={w.id}>{w.name} · {w.role}</option>)}
+            </Select>
+          </div>
+
+          <nav className="grid gap-2">
+            {isManager && <SidebarButton icon="▥" active={activeScreen==="dashboard"} onClick={()=>navigateTo("dashboard")}>דשבורד מנהלים</SidebarButton>}
+            <SidebarButton icon="⌂" active={activeScreen==="home"} onClick={()=>navigateTo("home")}>מסך בית</SidebarButton>
+            {!isTaskOnlyWorker(activeUserId) && <SidebarButton icon="▤" active={activeScreen==="clients"} onClick={()=>navigateTo("clients")}>טבלת לקוחות</SidebarButton>}
+            <SidebarButton icon="✓" active={activeScreen==="tasks"} onClick={()=>navigateTo("tasks")}>משימות</SidebarButton>
+            <SidebarButton icon="↧" active={activeScreen==="reports"} onClick={()=>navigateTo("reports")}>דוחות ודיווחים</SidebarButton>
+            {isManager && <SidebarButton icon="👥" active={activeScreen==="manager"} onClick={()=>navigateTo("manager")}>מנהל לידים</SidebarButton>}
+          </nav>
+        </aside>
+
+        <main className="flex-1 p-5 md:p-8">
+          <div className="mx-auto max-w-7xl space-y-6">
+            <header className="glass rounded-[30px] p-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm font-bold text-slate-500">משתמש פעיל: {activeUser.name} · {activeUser.role}</p>
+                <h2 className="text-4xl font-extrabold tracking-tight">
+                  {activeScreen==="dashboard" && "דשבורד מנהלים"}
+                  {activeScreen==="home" && "מסך בית"}
+                  {activeScreen==="clients" && "טבלת לקוחות"}
+                  {activeScreen==="tasks" && "משימות"}
+                  {activeScreen==="reports" && "דוחות ודיווחים"}
+                  {activeScreen==="manager" && "מנהל לידים"}
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <ThemeToggle dark={dark} setDark={setDark} />
+                {!isTaskOnlyWorker(activeUserId) && <Button onClick={()=>navigateTo("clients")} className="blue-pill">+ הוספת לקוח</Button>}
+              </div>
+            </header>
+
+            {activeScreen === "dashboard" && isManager && (
+              <div className="space-y-6">
+                <Card className="p-5">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <h3 className="text-xl font-extrabold">פילטור סך המכירות לפי תאריך</h3>
+                      <p className="text-sm text-slate-500">מציג את סך המכירות והסגירות בתאריך שנבחר.</p>
+                    </div>
+                    <div className="md:w-72">
+                      <Input type="date" value={salesDateFilter} onChange={e=>setSalesDateFilter(e.target.value)} />
+                      <p className="mt-2 text-sm font-bold">₪{metrics.salesByDate.toLocaleString("he-IL")} · {metrics.closedByDate} סגירות</p>
+                    </div>
+                  </div>
+                </Card>
+
+                <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                  <StatCard icon="◎" title="לידים שנכנסו היום" value={visibleClients.filter(c=>c.createdAt===today).length} subtitle="לחיצה תציג לידים חדשים" onClick={()=>{setStatusFilter("חדש"); navigateTo("clients")}} />
+                  <StatCard icon="✓" title="סגירות" value={visibleClients.filter(c=>c.status==="נסגר / נמכר").length} subtitle="אחוז המרה כללי" onClick={()=>{setStatusFilter("נסגר / נמכר"); navigateTo("clients")}} />
+                  <StatCard icon="⏰" title="תזכורות פתוחות" value={visibleClients.filter(c=>c.followUpAt && c.status!=="נסגר / נמכר").length} subtitle="Follow-up פתוח" onClick={()=>navigateTo("clients")} />
+                  <StatCard icon="✓" title="משימות עובדים פתוחות" value={flatTasks.filter(t=>t.status!=="משימה הושלמה").length} subtitle={`${flatTasks.filter(t=>t.status==="משימה הושלמה").length} הושלמו`} onClick={()=>navigateTo("tasks")} />
+                  <StatCard icon="₪" title="סך מכירות בתאריך" value={`₪${metrics.salesByDate.toLocaleString("he-IL")}`} subtitle={formatDate(salesDateFilter)} onClick={()=>navigateTo("reports")} />
+                </section>
+
+                <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                  <Card className="p-5">
+                    <div className="mb-4 flex justify-between gap-3">
+                      <div><h3 className="text-xl font-extrabold">ביצועים לפי עובד</h3><p className="text-sm text-slate-500">לחיצה על עובד תפתח את תיקי הלקוחות והמשימות שלו.</p></div>
+                      <span className="status bg-slate-100 text-slate-600">Team Performance</span>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      {workerStats.map(worker => (
+                        <button key={worker.id} onClick={()=>openWorkerPanel(worker.id,"clients")} className="clickable rounded-3xl bg-slate-50 p-4 text-right">
+                          <div className="flex justify-between gap-3">
+                            <div><p className="font-extrabold">{worker.name}</p><p className="text-sm text-slate-500">{worker.role}</p></div>
+                            <p className="font-extrabold">₪{worker.revenue.toLocaleString("he-IL")}</p>
+                          </div>
+                          <p className="mt-2 text-xs text-slate-500">{worker.clientsTotal} לידים · {worker.openTasks} משימות פתוחות · {worker.inProgressTasks} בטיפול · {worker.completedTasks} הושלמו</p>
+                          <div className="mt-3 h-2 rounded-full bg-slate-200 overflow-hidden"><div className="h-full rounded-full bg-blue-400" style={{width:`${Math.min(100, Math.max(8, worker.clientsTotal*12 + worker.completedTasks*8))}%`}}></div></div>
+                        </button>
+                      ))}
+                    </div>
+                  </Card>
+
+                  <Card className="p-5">
+                    <div className="mb-4 flex justify-between gap-3">
+                      <div><h3 className="text-xl font-extrabold">מצב לידים כללי</h3><p className="text-sm text-slate-500">כל סטטוס לחיץ ומוביל לרשימה הרלוונטית.</p></div>
+                      <span className="status bg-slate-100 text-slate-600">Overview</span>
+                    </div>
+                    <div className="grid gap-3">
+                      {statusStats.map(item => {
+                        const width = visibleClients.length ? Math.max(6, Math.round((item.count / visibleClients.length)*100)) : 6;
+                        return <button key={item.status} onClick={()=>{setStatusFilter(item.status); navigateTo("clients")}} className="clickable rounded-2xl bg-slate-50 p-3 text-right">
+                          <div className="flex justify-between"><b>{item.status}</b><span>{item.count}</span></div>
+                          <div className="mt-2 h-2 rounded-full bg-slate-200 overflow-hidden"><div className="h-full rounded-full bg-blue-400" style={{width:`${width}%`}}></div></div>
+                        </button>
+                      })}
+                    </div>
+                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                      <button onClick={()=>navigateTo("clients")} className="clickable rounded-2xl bg-slate-50 p-4 text-right"><p className="text-xs text-slate-500">לידים פתוחים</p><p className="text-2xl font-extrabold">{visibleClients.filter(c=>!["נסגר / נמכר","לא רלוונטי"].includes(c.status)).length}</p></button>
+                      <button onClick={()=>navigateTo("tasks")} className="clickable rounded-2xl bg-slate-50 p-4 text-right"><p className="text-xs text-slate-500">משימות פתוחות</p><p className="text-2xl font-extrabold">{flatTasks.filter(t=>t.status!=="משימה הושלמה").length}</p></button>
+                      <button onClick={()=>bestWorker && openWorkerPanel(bestWorker.id,"clients")} className="clickable rounded-2xl bg-slate-50 p-4 text-right"><p className="text-xs text-slate-500">עובד בולט</p><p className="text-xl font-extrabold">{bestWorker?.name || "—"}</p></button>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            )}
+
+            {activeScreen === "home" && (
+              <div className="space-y-6">
+                <Card className="p-5">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div><h3 className="text-xl font-extrabold">סיכום מכירות אישי</h3><p className="text-sm text-slate-500">מכירות היום ופילטור לפי תאריך.</p></div>
+                    <div className="md:w-72"><Input type="date" value={salesDateFilter} onChange={e=>setSalesDateFilter(e.target.value)} /><p className="mt-2 text-sm font-bold">מכירות בתאריך: ₪{metrics.salesByDate.toLocaleString("he-IL")}</p></div>
+                  </div>
+                </Card>
+                <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                  <StatCard icon="₪" title="סך מכירות היום" value={`₪${metrics.salesToday.toLocaleString("he-IL")}`} subtitle={isManager ? "כל העובדים" : "הנתונים שלי"} onClick={()=>navigateTo("reports")} />
+                  <StatCard icon="₪" title="מכירות לפי תאריך" value={`₪${metrics.salesByDate.toLocaleString("he-IL")}`} subtitle={formatDate(salesDateFilter)} onClick={()=>navigateTo("reports")} />
+                  {!isTaskOnlyWorker(activeUserId) && <StatCard icon="▤" title="לקוחות בטיפול" value={metrics.clientsTotal} subtitle="תיקי לקוחות נגישים" onClick={()=>navigateTo("clients")} />}
+                  <StatCard icon="✓" title="משימות פתוחות" value={metrics.openTasks} subtitle={`${metrics.completedTasks} הושלמו`} onClick={()=>navigateTo("tasks")} />
+                  <StatCard icon="◌" title="דיווחים" value={metrics.reportsTotal} subtitle="פעולות ודיווחי משתמשים" onClick={()=>navigateTo("reports")} />
+                </section>
+                {!isTaskOnlyWorker(activeUserId) && (
+                  <Card className="p-5">
+                    <div className="mb-4 flex justify-between gap-3"><div><h3 className="text-xl font-extrabold">לקוחות אחרונים</h3><p className="text-sm text-slate-500">לחיצה על לקוח פותחת תיק מלא.</p></div><Button variant="ghost" onClick={()=>navigateTo("clients")}>פתיחת טבלה</Button></div>
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                      {visibleClients.slice(0,6).map(c => <button key={c.id} onClick={()=>openClient(c.id)} className="clickable rounded-3xl bg-slate-50 p-4 text-right"><div className="flex justify-between gap-3"><h4 className="font-extrabold">{c.fullName}</h4><Pill status={c.status}>{c.status}</Pill></div><p className="mt-2 text-sm text-slate-500">{c.phone} · {c.product}</p><p className="mt-1 text-xs text-slate-400">מטפל: {getWorkerName(c.ownerId)}</p></button>)}
+                    </div>
+                  </Card>
+                )}
+              </div>
+            )}
+
+            {activeScreen === "clients" && (
+              <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                <section className="space-y-4">
+                  <Card className="p-5">
+                    <h3 className="mb-4 text-xl font-extrabold">הוספת לקוח / טעינת טבלה</h3>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <Input value={newClient.fullName} onChange={e=>setNewClient({...newClient, fullName:e.target.value})} placeholder="שם מלא" />
+                      <Input value={newClient.phone} onChange={e=>setNewClient({...newClient, phone:e.target.value})} placeholder="טלפון" />
+                      <Input value={newClient.email} onChange={e=>setNewClient({...newClient, email:e.target.value})} placeholder="אימייל" />
+                      <Input value={newClient.city} onChange={e=>setNewClient({...newClient, city:e.target.value})} placeholder="עיר / אזור" />
+                      <Input value={newClient.product} onChange={e=>setNewClient({...newClient, product:e.target.value})} placeholder="מוצר / שירות" className="md:col-span-2" />
+                    </div>
+                    <Button className="mt-4" onClick={()=>addClient()}>+ הוספת לקוח</Button>
+                    <div className="mt-5 rounded-3xl bg-slate-50 p-4">
+                      <h4 className="font-bold">טעינת לקוחות בהדבקה מטבלה</h4><p className="text-xs text-slate-500">כל שורה: שם, טלפון, עיר, אימייל, מוצר.</p>
+                      <Textarea value={bulkText} onChange={e=>setBulkText(e.target.value)} placeholder="ישראל ישראלי,0500000000,תל אביב,email@test.com,ייעוץ" />
+                      <Button variant="ghost" className="mt-3" onClick={()=>loadBulkClients()}>טעינת לקוחות</Button>
+                    </div>
+                  </Card>
+
+                  <Card className="p-5">
+                    <div className="mb-4 grid gap-3 md:grid-cols-[1fr_170px_170px]">
+                      <Input value={query} onChange={e=>setQuery(e.target.value)} placeholder="חיפוש לפי שם, טלפון, עיר או אימייל" />
+                      <Select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}><option>הכל</option>{clientStatuses.map(s=><option key={s}>{s}</option>)}</Select>
+                      <Select value={ownerFilter} disabled={!isManager} onChange={e=>setOwnerFilter(e.target.value)}><option value="הכל">כל העובדים</option>{clientEnabledWorkers().map(w=><option key={w.id} value={w.id}>{w.name}</option>)}</Select>
+                    </div>
+                    <div className="table-wrap">
+                      <table className="w-full min-w-[980px] text-sm">
+                        <thead className="bg-slate-50 text-slate-500"><tr>{["שם","טלפון","עיר","מוצר","סטטוס","עובד","מכירה","פתיחה"].map(h=><th key={h} className="p-3 text-right">{h}</th>)}</tr></thead>
+                        <tbody>
+                          {filteredClients.map(c => (
+                            <tr key={c.id} className="border-t border-slate-100">
+                              <td className="p-2"><Input value={c.fullName} onChange={e=>updateClientField(c.id,"fullName",e.target.value)} /></td>
+                              <td className="p-2"><Input value={c.phone} onChange={e=>updateClientField(c.id,"phone",e.target.value)} /></td>
+                              <td className="p-2"><Input value={c.city} onChange={e=>updateClientField(c.id,"city",e.target.value)} /></td>
+                              <td className="p-2"><Input value={c.product} onChange={e=>updateClientField(c.id,"product",e.target.value)} /></td>
+                              <td className="p-2"><Select value={c.status} onChange={e=>setClient(c.id,{status:e.target.value, saleDate:e.target.value==="נסגר / נמכר" ? today : c.saleDate, lastAction:`סטטוס עודכן ל-${e.target.value}`})}>{clientStatuses.map(s=><option key={s}>{s}</option>)}</Select></td>
+                              <td className="p-2"><Select value={c.ownerId} disabled={!isManager} onChange={e=>updateClientField(c.id,"ownerId",e.target.value)}>{clientEnabledWorkers().map(w=><option key={w.id} value={w.id}>{w.name}</option>)}</Select></td>
+                              <td className="p-2"><Input type="number" value={c.saleAmount} onChange={e=>updateClientField(c.id,"saleAmount",Number(e.target.value))} /></td>
+                              <td className="p-2"><Button onClick={()=>openClient(c.id)}>תיק לקוח</Button></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </Card>
+                </section>
+
+                <section className="xl:sticky xl:top-8 xl:h-fit">
+                  <ClientFile client={selectedClient} setClient={setClient} sendWhatsAppToClient={sendWhatsAppToClient} newAction={newAction} setNewAction={setNewAction} addActionToClient={addActionToClient} newReport={newReport} setNewReport={setNewReport} addReportToClient={addReportToClient} newClientTask={newClientTask} setNewClientTask={setNewClientTask} addTaskToClient={addTaskToClient} renderClientTasks={renderClientTasks} />
+                </section>
+              </div>
+            )}
+
+            {activeScreen === "tasks" && (
+              <Card className="p-5">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div><h3 className="text-xl font-extrabold">משימות עובדים</h3><p className="text-sm text-slate-500">{isManager ? "מנהל הלידים רואה את משימות העובדים של כולם." : "כאן מופיעות משימות העובד שלך בלבד."}</p></div>
+                  {!isTaskOnlyWorker(activeUserId) && <Button variant="ghost" onClick={()=>navigateTo("clients")}>פתיחת טבלת לקוחות</Button>}
+                </div>
+                <div className="space-y-3">
+                  {visibleTasks.map(task => (
+                    <div key={task.id} className="rounded-3xl bg-slate-50 p-4">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div><div className="flex flex-wrap items-center gap-2"><h4 className="font-extrabold">{task.clientName}</h4><Pill>{task.status}</Pill></div><p className="mt-1 text-sm text-slate-700">{task.type}</p><p className="mt-1 text-xs text-slate-500">אחראי: {getWorkerName(task.ownerId)} · יעד: {formatDate(task.dueDate)}</p>{task.note && <p className="mt-2 text-sm text-slate-600">{task.note}</p>}</div>
+                        <div className="grid gap-2 md:w-44"><Select value={task.status} onChange={e=>updateClientTask(task.clientId, task.id, {status:e.target.value})}>{taskStatuses.map(s=><option key={s}>{s}</option>)}</Select>{task.clientId ? <Button variant="ghost" onClick={()=>openClient(task.clientId)}>תיק לקוח</Button> : <span className="rounded-2xl bg-slate-100 px-4 py-2 text-center text-xs text-slate-500">ללא תיק לקוח</span>}</div>
+                      </div>
+                    </div>
+                  ))}
+                  {visibleTasks.length === 0 && <EmptyState title="אין משימות" subtitle="אפשר ליצור משימה מתוך תיק לקוח או כרטיס עובד." />}
+                </div>
+              </Card>
+            )}
+
+            {activeScreen === "reports" && (
+              <div className="space-y-6">
+                <Card className="p-5">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><h3 className="text-xl font-extrabold">פילטור דוח מכירות לפי תאריך</h3><p className="text-sm text-slate-500">הדוח והמדדים מתעדכנים לפי התאריך שנבחר.</p></div><div className="md:w-72"><Input type="date" value={salesDateFilter} onChange={e=>setSalesDateFilter(e.target.value)} /><p className="mt-2 text-sm font-bold">₪{metrics.salesByDate.toLocaleString("he-IL")} · {metrics.closedByDate} סגירות</p></div></div>
+                </Card>
+                <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                  <StatCard icon="₪" title="מכירות היום" value={`₪${metrics.salesToday.toLocaleString("he-IL")}`} />
+                  <StatCard icon="₪" title="מכירות בתאריך" value={`₪${metrics.salesByDate.toLocaleString("he-IL")}`} subtitle={formatDate(salesDateFilter)} />
+                  <StatCard icon="▤" title="תיקי לקוחות" value={metrics.clientsTotal} />
+                  <StatCard icon="✓" title="משימות פתוחות" value={metrics.openTasks} onClick={()=>navigateTo("tasks")} />
+                  <StatCard icon="◌" title="דיווחים" value={metrics.reportsTotal} />
+                </section>
+                <Card className="p-5">
+                  <div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="text-xl font-extrabold">דוחות ודיווחים על המסך</h3><p className="text-sm text-slate-500">כולל לקוחות, משימות ודיווחי משתמשים.</p></div><Button onClick={downloadExcel}>הורדה לאקסל</Button></div>
+                  <div className="grid gap-6 xl:grid-cols-2">
+                    <div><h4 className="mb-3 font-bold">דיווחים אחרונים</h4><div className="space-y-2">{visibleReports.map(r=><button key={r.id} onClick={()=>openClient(r.clientId)} className="clickable w-full rounded-2xl bg-slate-50 p-3 text-right"><p className="font-bold">{r.clientName} · {getWorkerName(r.userId)}</p><p className="text-sm text-slate-600">{r.text}</p><p className="text-xs text-slate-400">{formatDate(r.date)}</p></button>)}{visibleReports.length===0 && <p className="text-sm text-slate-500">אין דיווחים להצגה.</p>}</div></div>
+                    <div><h4 className="mb-3 font-bold">דוח עובדים</h4><div className="space-y-2">{workerStats.map(w=><button key={w.id} onClick={()=>openWorkerPanel(w.id,"clients")} className="clickable w-full rounded-2xl bg-slate-50 p-3 text-right"><div className="flex justify-between gap-3"><div><p className="font-bold">{w.name}</p><p className="text-xs text-slate-500">{w.clientsTotal} לקוחות · {w.openTasks} משימות פתוחות · {w.reportsTotal} דיווחים</p></div><p className="font-bold">₪{w.revenue.toLocaleString("he-IL")}</p></div></button>)}</div></div>
+                  </div>
+                </Card>
+              </div>
+            )}
+
+            {activeScreen === "manager" && isManager && (
+              <div className="space-y-6">
+                <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                  <StatCard icon="₪" title="מכירות היום - כולם" value={`₪${metrics.salesToday.toLocaleString("he-IL")}`} />
+                  <StatCard icon="₪" title="מכירות בתאריך - כולם" value={`₪${metrics.salesByDate.toLocaleString("he-IL")}`} subtitle={formatDate(salesDateFilter)} />
+                  <StatCard icon="▤" title="תיקי לקוחות - כולם" value={clients.length} />
+                  <StatCard icon="✓" title="משימות פתוחות - כולם" value={flatTasks.filter(t=>t.status!=="משימה הושלמה").length} onClick={()=>navigateTo("tasks")} />
+                  <StatCard icon="◌" title="דיווחים - כולם" value={reports.length} />
+                </section>
+                <Card className="p-5"><h3 className="mb-4 text-xl font-extrabold">שליטת מנהל לידים · משימות עובדים</h3><div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{workerStats.map(w=><button key={w.id} onClick={()=>openWorkerPanel(w.id,"clients")} className="clickable rounded-3xl bg-slate-50 p-4 text-right"><p className="font-extrabold">{w.name}</p><p className="text-xs text-slate-500">{w.role}</p><div className="mt-4 grid gap-1 text-sm"><div className="flex justify-between"><span>לקוחות</span><b>{w.clientsTotal}</b></div><div className="flex justify-between"><span>משימות פתוחות</span><b>{w.openTasks}</b></div><div className="flex justify-between"><span>הושלמו</span><b>{w.completedTasks}</b></div><div className="flex justify-between"><span>דיווחים</span><b>{w.reportsTotal}</b></div><div className="flex justify-between"><span>מכירות</span><b>₪{w.revenue.toLocaleString("he-IL")}</b></div></div></button>)}</div></Card>
+              </div>
+            )}
+
+            {selectedWorkerPanel && (
+              <WorkerModal
+                selectedWorkerPanel={selectedWorkerPanel}
+                selectedWorkerIsTaskOnly={selectedWorkerIsTaskOnly}
+                workerPanelClient={workerPanelClient}
+                workerPanelClients={workerPanelClients}
+                workerPanelTasks={workerPanelTasks}
+                displayedWorkerPanelTasks={displayedWorkerPanelTasks}
+                workerPanelStats={workerPanelStats}
+                workerPanelTab={workerPanelTab}
+                setWorkerPanelTab={setWorkerPanelTab}
+                setSelectedWorkerPanelId={setSelectedWorkerPanelId}
+                setWorkerPanelClientId={setWorkerPanelClientId}
+                workerTaskStatusFilter={workerTaskStatusFilter}
+                setWorkerTaskStatusFilter={setWorkerTaskStatusFilter}
+                openClientInsideWorkerPanel={setWorkerPanelClientId}
+                sendWhatsAppToClient={sendWhatsAppToClient}
+                newAction={newAction}
+                setNewAction={setNewAction}
+                addActionToClient={addActionToClient}
+                newReport={newReport}
+                setNewReport={setNewReport}
+                addReportToClient={addReportToClient}
+                renderClientTasks={renderClientTasks}
+                updateClientField={updateClientField}
+                setClient={setClient}
+                workerNewClient={workerNewClient}
+                setWorkerNewClient={setWorkerNewClient}
+                addClientToWorker={() => {
+                  if(!workerNewClient.fullName.trim() || !workerNewClient.phone.trim()) return;
+                  const c = {id:"C-"+Date.now(), fullName:workerNewClient.fullName, phone:workerNewClient.phone, email:workerNewClient.email, city:workerNewClient.city, product:workerNewClient.product || "לא צוין", source:"הקלדה בכרטיס עובד", status:"חדש", ownerId:selectedWorkerPanel.id, createdAt:today, followUpAt:today, saleAmount:0, lastAction:"לקוח נוסף דרך עובד", actions:[], reports:[], tasks:[]};
+                  setClients(prev => [c, ...prev]); setWorkerNewClient({fullName:"",phone:"",email:"",city:"",product:""});
+                }}
+                workerBulkText={workerBulkText}
+                setWorkerBulkText={setWorkerBulkText}
+                loadBulkClientsToWorker={() => loadBulkClients(selectedWorkerPanel.id, workerBulkText)}
+                workerTaskDraft={workerTaskDraft}
+                setWorkerTaskDraft={setWorkerTaskDraft}
+                addWorkerTask={addWorkerTask}
+                updateClientTask={updateClientTask}
+              />
+            )}
+          </div>
+        </main>
+      </div>
+    </div>
+  )
+}
+
+function ClientFile({client, sendWhatsAppToClient, newAction, setNewAction, addActionToClient, newReport, setNewReport, addReportToClient, newClientTask, setNewClientTask, addTaskToClient, renderClientTasks}){
+  if(!client) return <EmptyState title="בחרי לקוח" subtitle="תיק הלקוח יופיע כאן." />
+  return (
+    <Card className="p-5">
+      <div className="space-y-5">
+        <div className="flex justify-between gap-4">
+          <div><h3 className="text-2xl font-extrabold">{client.fullName}</h3><p className="text-sm text-slate-500">{client.phone} · {client.email || "ללא אימייל"}</p></div>
+          <Pill status={client.status}>{client.status}</Pill>
+        </div>
+        <div className="grid gap-3 rounded-3xl bg-slate-50 p-4 text-sm md:grid-cols-2">
+          <div><span className="text-slate-500">עיר:</span> <b>{client.city}</b></div>
+          <div><span className="text-slate-500">מוצר:</span> <b>{client.product}</b></div>
+          <div><span className="text-slate-500">עובד מטפל:</span> <b>{getWorkerName(client.ownerId)}</b></div>
+          <div><span className="text-slate-500">מכירה:</span> <b>₪{Number(client.saleAmount||0).toLocaleString("he-IL")}</b></div>
+        </div>
+        <div className="flex flex-wrap gap-2 rounded-3xl bg-slate-50 p-3"><Button onClick={()=>sendWhatsAppToClient(client)}>פתיחת WhatsApp</Button><p className="flex items-center text-xs text-slate-500">פותח את WhatsApp בלבד, ללא הודעה מוכנה.</p></div>
+        <div>
+          <h4 className="mb-2 font-bold">תפריט משימות לעובדים</h4>
+          <div className="grid gap-3 md:grid-cols-[1fr_1fr_150px]">
+            <Select value={newClientTask.type} onChange={e=>setNewClientTask({...newClientTask,type:e.target.value})}>{clientTaskTypes.map(t=><option key={t}>{t}</option>)}</Select>
+            <Select value={newClientTask.ownerId || client.ownerId} onChange={e=>setNewClientTask({...newClientTask,ownerId:e.target.value})}>{workers.filter(w=>!w.isManager).map(w=><option key={w.id} value={w.id}>{w.name} · {w.role}{w.taskOnly ? " · משימות בלבד" : ""}</option>)}</Select>
+            <Input type="date" value={newClientTask.dueDate} onChange={e=>setNewClientTask({...newClientTask,dueDate:e.target.value})} />
+          </div>
+          <Input value={newClientTask.note} onChange={e=>setNewClientTask({...newClientTask,note:e.target.value})} placeholder="הערה למשימה" className="mt-2" />
+          <Button className="mt-2" onClick={()=>addTaskToClient(client)}>הוספת משימה לעובד</Button>
+          <div className="mt-3">{renderClientTasks(client)}</div>
+        </div>
+        <div>
+          <h4 className="mb-2 font-bold">היסטוריית פעולות מול הלקוח</h4>
+          <Textarea value={newAction} onChange={e=>setNewAction(e.target.value)} placeholder="מה קרה בשיחה? מה סוכם? האם נשלחה הצעת מחיר?" />
+          <Button variant="ghost" className="mt-2" onClick={()=>addActionToClient(client)}>שמירת פעולה</Button>
+          <div className="mt-3 max-h-56 space-y-2 overflow-auto rounded-3xl bg-slate-50 p-3">
+            {client.actions.map(a=><div key={a.id} className="rounded-2xl bg-white p-3 text-sm shadow-sm"><p className="font-bold">{a.type} · {getWorkerName(a.userId)}</p><p className="text-slate-600">{a.text}</p><p className="text-xs text-slate-400">{formatDate(a.date)}</p></div>)}
+            {client.actions.length===0 && <p className="text-sm text-slate-500">אין פעולות עדיין.</p>}
+          </div>
+        </div>
+        <div>
+          <h4 className="mb-2 font-bold">דיווח משתמש על פעולות שנעשו</h4>
+          <Textarea value={newReport} onChange={e=>setNewReport(e.target.value)} placeholder="דיווח פנימי למנהל/ת..." />
+          <Button variant="ghost" className="mt-2" onClick={()=>addReportToClient(client)}>שמירת דיווח</Button>
+          <div className="mt-3 max-h-44 space-y-2 overflow-auto rounded-3xl bg-slate-50 p-3">
+            {client.reports.map(r=><div key={r.id} className="rounded-2xl bg-white p-3 text-sm shadow-sm"><p className="font-bold">{getWorkerName(r.userId)} · {formatDate(r.date)}</p><p className="text-slate-600">{r.text}</p></div>)}
+            {client.reports.length===0 && <p className="text-sm text-slate-500">אין דיווחים עדיין.</p>}
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+function WorkerModal(props){
+  const {
+    selectedWorkerPanel, selectedWorkerIsTaskOnly, workerPanelClient, workerPanelClients, workerPanelTasks,
+    displayedWorkerPanelTasks, workerPanelStats, workerPanelTab, setWorkerPanelTab, setSelectedWorkerPanelId, setWorkerPanelClientId,
+    workerTaskStatusFilter, setWorkerTaskStatusFilter, openClientInsideWorkerPanel, sendWhatsAppToClient,
+    newAction, setNewAction, addActionToClient, newReport, setNewReport, addReportToClient, renderClientTasks,
+    updateClientField, setClient, workerNewClient, setWorkerNewClient, addClientToWorker, workerBulkText, setWorkerBulkText,
+    loadBulkClientsToWorker, workerTaskDraft, setWorkerTaskDraft, addWorkerTask, updateClientTask
+  } = props;
+
+  const close = () => { setSelectedWorkerPanelId(""); setWorkerPanelClientId(""); };
+  const back = () => setWorkerPanelClientId("");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4" onClick={close}>
+      <div className="modal-box modal-scroll w-full max-w-6xl rounded-[2rem] bg-white p-5 shadow-2xl" onClick={e=>e.stopPropagation()}>
+        <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h3 className="text-3xl font-extrabold">{workerPanelClient ? workerPanelClient.fullName : selectedWorkerPanel.name}</h3>
+            <p className="mt-1 text-sm text-slate-500">{workerPanelClient ? `תיק לקוח מתוך כרטיס העובד · ${selectedWorkerPanel.name}` : `${selectedWorkerPanel.role} · ${selectedWorkerIsTaskOnly ? "משימות בלבד" : `${workerPanelClients.length} לקוחות`} · ${workerPanelTasks.length} משימות עובדים`}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {workerPanelClient && <Button onClick={back}>חזרה לעובד</Button>}
+            {!workerPanelClient && !selectedWorkerIsTaskOnly && <Button variant={workerPanelTab==="clients" ? "primary" : "ghost"} onClick={()=>setWorkerPanelTab("clients")}>לידים של העובד</Button>}
+            {!workerPanelClient && <Button variant={workerPanelTab==="tasks" ? "primary" : "ghost"} onClick={()=>{setWorkerPanelTab("tasks");setWorkerTaskStatusFilter("הכל")}}>משימות של העובד</Button>}
+            {!workerPanelClient && !selectedWorkerIsTaskOnly && <Button variant={workerPanelTab==="load" ? "primary" : "ghost"} onClick={()=>setWorkerPanelTab("load")}>טעינת טבלת לקוחות</Button>}
+            <Button variant="ghost" onClick={close}>סגירה</Button>
+          </div>
+        </div>
+
+        {workerPanelClient ? (
+          <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+            <Card className="p-5">
+              <div className="space-y-4">
+                <div className="flex justify-between gap-4"><div><p className="text-sm font-bold text-slate-500">תיק לקוח מתוך כרטיס העובד</p><h4 className="text-2xl font-extrabold">{workerPanelClient.fullName}</h4><p className="text-sm text-slate-500">{workerPanelClient.phone}</p></div><Pill status={workerPanelClient.status}>{workerPanelClient.status}</Pill></div>
+                <div className="grid gap-3 rounded-3xl bg-white p-4 text-sm md:grid-cols-2"><div><span className="text-slate-500">מוצר:</span> <b>{workerPanelClient.product}</b></div><div><span className="text-slate-500">עיר:</span> <b>{workerPanelClient.city}</b></div><div><span className="text-slate-500">עובד מטפל:</span> <b>{getWorkerName(workerPanelClient.ownerId)}</b></div><div><span className="text-slate-500">מכירה:</span> <b>₪{Number(workerPanelClient.saleAmount||0).toLocaleString("he-IL")}</b></div></div>
+                <div className="flex flex-wrap gap-2 rounded-3xl bg-white p-3"><Button onClick={()=>sendWhatsAppToClient(workerPanelClient)}>פתיחת WhatsApp</Button><Button variant="ghost" onClick={back}>חזרה לכרטיס עובד</Button><p className="text-xs text-slate-500 flex items-center">פותח את WhatsApp בלבד, ללא הודעה מוכנה.</p></div>
+                <div><h5 className="mb-2 font-bold">הוספת פעולה / סיכום שיחה</h5><Textarea value={newAction} onChange={e=>setNewAction(e.target.value)} placeholder="מה קרה בשיחה? מה סוכם? האם צריך המשך טיפול?" /><Button variant="ghost" className="mt-2" onClick={()=>addActionToClient(workerPanelClient)}>שמירת פעולה בהיסטוריה</Button></div>
+                <div><h5 className="mb-2 font-bold">דיווח פנימי</h5><Textarea value={newReport} onChange={e=>setNewReport(e.target.value)} placeholder="דיווח פנימי למנהל/ת" /><Button variant="ghost" className="mt-2" onClick={()=>addReportToClient(workerPanelClient)}>שמירת דיווח</Button></div>
+              </div>
+            </Card>
+            <Card className="p-5">
+              <div className="space-y-5">
+                <div><h4 className="text-2xl font-extrabold">היסטוריית לקוח</h4><p className="text-sm text-slate-500">כל שיחה, WhatsApp, הצעת מחיר, סיכום ומשימה נשמרים כאן לפי תאריך.</p></div>
+                <div className="grid gap-3 rounded-3xl bg-white p-4 md:grid-cols-3"><div><p className="text-xs text-slate-500">תאריך פתיחה</p><p className="font-bold">{formatDate(workerPanelClient.createdAt)}</p></div><div><p className="text-xs text-slate-500">Follow-up</p><p className="font-bold">{formatDate(workerPanelClient.followUpAt)}</p></div><div><p className="text-xs text-slate-500">פעולה אחרונה</p><p className="font-bold">{workerPanelClient.lastAction}</p></div></div>
+                <div className="grid gap-5 lg:grid-cols-2">
+                  <div><h5 className="mb-3 font-bold">Timeline פעולות</h5><div className="max-h-80 space-y-2 overflow-auto rounded-3xl bg-white p-3">{workerPanelClient.actions.map(a=><div key={a.id} className="rounded-2xl bg-slate-50 p-3 text-sm shadow-sm"><p className="font-bold">{a.type} · {getWorkerName(a.userId)}</p><p className="text-slate-600">{a.text}</p><p className="text-xs text-slate-400">{formatDate(a.date)}</p></div>)}{workerPanelClient.actions.length===0 && <p className="text-sm text-slate-500">אין פעולות עדיין.</p>}</div></div>
+                  <div><h5 className="mb-3 font-bold">דיווחים ומשימות</h5><div className="space-y-3"><div className="rounded-3xl bg-white p-3"><p className="mb-2 text-sm font-bold">משימות על הלקוח</p>{renderClientTasks(workerPanelClient)}</div><div className="max-h-56 space-y-2 overflow-auto rounded-3xl bg-white p-3">{workerPanelClient.reports.map(r=><div key={r.id} className="rounded-2xl bg-slate-50 p-3 text-sm shadow-sm"><p className="font-bold">{getWorkerName(r.userId)} · {formatDate(r.date)}</p><p className="text-slate-600">{r.text}</p></div>)}{workerPanelClient.reports.length===0 && <p className="text-sm text-slate-500">אין דיווחים עדיין.</p>}</div></div></div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {!selectedWorkerIsTaskOnly && <StatCard icon="▤" title="לידים" value={workerPanelClients.length} subtitle="לקוחות משויכים לעובד" onClick={()=>setWorkerPanelTab("clients")} />}
+              <StatCard icon="✓" title="משימות פתוחות" value={workerPanelStats?.openTasks || 0} subtitle="לחיצה תציג פתוחות" onClick={()=>{setWorkerPanelTab("tasks");setWorkerTaskStatusFilter("פתוחות")}} />
+              <StatCard icon="✓" title="הושלמו" value={workerPanelStats?.completedTasks || 0} subtitle="לחיצה תציג הושלמו" onClick={()=>{setWorkerPanelTab("tasks");setWorkerTaskStatusFilter("משימה הושלמה")}} />
+              {!selectedWorkerIsTaskOnly && <StatCard icon="₪" title="מכירות בתאריך" value={`₪${Number(workerPanelStats?.salesByDate||0).toLocaleString("he-IL")}`} subtitle={formatDate(today)} onClick={()=>setWorkerPanelTab("clients")} />}
+            </section>
+
+            {workerPanelTab === "clients" && !selectedWorkerIsTaskOnly && (
+              <div className="grid gap-5 xl:grid-cols-[1fr_0.8fr]">
+                <Card className="p-5">
+                  <div className="mb-4 flex justify-between gap-3"><div><h4 className="text-xl font-extrabold">טבלת לקוחות של {selectedWorkerPanel.name}</h4><p className="text-sm text-slate-500">אפשר לערוך או לפתוח תיק לקוח מלא.</p></div><Button onClick={()=>setWorkerPanelTab("load")}>+ טעינה / הוספה</Button></div>
+                  <div className="table-wrap">
+                    <table className="w-full min-w-[760px] text-sm"><thead className="bg-slate-50 text-slate-500"><tr>{["שם","טלפון","מוצר","סטטוס","מכירה","פתיחה"].map(h=><th key={h} className="p-3 text-right">{h}</th>)}</tr></thead><tbody>{workerPanelClients.map(c=><tr key={c.id} className="border-t border-slate-100"><td className="p-2"><Input value={c.fullName} onChange={e=>updateClientField(c.id,"fullName",e.target.value)} /></td><td className="p-2"><Input value={c.phone} onChange={e=>updateClientField(c.id,"phone",e.target.value)} /></td><td className="p-2"><Input value={c.product} onChange={e=>updateClientField(c.id,"product",e.target.value)} /></td><td className="p-2"><Select value={c.status} onChange={e=>setClient(c.id,{status:e.target.value, saleDate:e.target.value==="נסגר / נמכר" ? today : c.saleDate, lastAction:`סטטוס עודכן ל-${e.target.value}`})}>{clientStatuses.map(s=><option key={s}>{s}</option>)}</Select></td><td className="p-2"><Input type="number" value={c.saleAmount} onChange={e=>updateClientField(c.id,"saleAmount",Number(e.target.value))} /></td><td className="p-2"><Button onClick={()=>openClientInsideWorkerPanel(c.id)}>תיק לקוח</Button></td></tr>)}</tbody></table>
+                    {workerPanelClients.length===0 && <div className="p-6 text-center text-sm text-slate-500">אין לקוחות לעובד הזה עדיין.</div>}
+                  </div>
+                </Card>
+                <Card className="p-5"><h4 className="mb-3 text-xl font-extrabold">הוספת לקוח לעובד</h4><div className="grid gap-3"><Input value={workerNewClient.fullName} onChange={e=>setWorkerNewClient({...workerNewClient,fullName:e.target.value})} placeholder="שם מלא" /><Input value={workerNewClient.phone} onChange={e=>setWorkerNewClient({...workerNewClient,phone:e.target.value})} placeholder="טלפון" /><Input value={workerNewClient.city} onChange={e=>setWorkerNewClient({...workerNewClient,city:e.target.value})} placeholder="עיר / אזור" /><Input value={workerNewClient.email} onChange={e=>setWorkerNewClient({...workerNewClient,email:e.target.value})} placeholder="אימייל" /><Input value={workerNewClient.product} onChange={e=>setWorkerNewClient({...workerNewClient,product:e.target.value})} placeholder="מוצר / שירות" /><Button onClick={addClientToWorker}>הוספת לקוח לעובד</Button></div></Card>
+              </div>
+            )}
+
+            {workerPanelTab === "tasks" && (
+              <div className="grid gap-5 xl:grid-cols-[1fr_0.8fr]">
+                <Card className="p-5">
+                  <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"><div><h4 className="text-xl font-extrabold">משימות של {selectedWorkerPanel.name}</h4><p className="text-sm text-slate-500">סינון לפי סטטוס.</p></div><div className="flex flex-wrap gap-2">{["הכל","פתוחות","פתוחה","משימה בטיפול","משימה הושלמה"].map(f=><Button key={f} variant={workerTaskStatusFilter===f ? "primary" : "ghost"} className="text-xs" onClick={()=>setWorkerTaskStatusFilter(f)}>{f}</Button>)}</div></div>
+                  <div className="space-y-3">{displayedWorkerPanelTasks.map(task=><div key={task.id} className="rounded-3xl bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"><div><p className="font-extrabold">{task.clientId ? task.clientName : "משימה פנימית"}</p><p className="mt-1 text-sm text-slate-700">{task.type}</p><p className="mt-1 text-xs text-slate-500">יעד: {formatDate(task.dueDate)}</p>{task.note && <p className="mt-2 text-sm text-slate-600">{task.note}</p>}</div><div className="grid gap-2 md:w-48"><Select value={task.status} onChange={e=>updateClientTask(task.clientId, task.id, {status:e.target.value})}>{taskStatuses.map(s=><option key={s}>{s}</option>)}</Select>{task.clientId ? <Button onClick={()=>openClientInsideWorkerPanel(task.clientId)}>תיק לקוח</Button> : <span className="rounded-2xl bg-slate-100 px-4 py-2 text-center text-xs text-slate-500">ללא תיק לקוח</span>}</div></div></div>)}{displayedWorkerPanelTasks.length===0 && <EmptyState title="אין משימות להצגה" subtitle="אפשר לשנות סינון או להוסיף משימה חדשה." />}</div>
+                </Card>
+                <Card className="p-5"><h4 className="mb-3 text-xl font-extrabold">{selectedWorkerIsTaskOnly ? "הוספת משימה רגילה לעובד" : "הוספת משימה לעובד"}</h4><p className="mb-3 text-sm text-slate-500">{selectedWorkerIsTaskOnly ? "לעובד זה אין לקוחות. המשימות כאן הן משימות פנימיות רגילות בלבד." : "אפשר לקשר משימה ללקוח או להשאיר ללא לקוח."}</p><div className="grid gap-3">{!selectedWorkerIsTaskOnly && <Select value={workerTaskDraft.clientId} onChange={e=>setWorkerTaskDraft({...workerTaskDraft,clientId:e.target.value})}><option value="">ללא לקוח מקושר</option>{workerPanelClients.map(c=><option key={c.id} value={c.id}>{c.fullName}</option>)}</Select>}<Select value={workerTaskDraft.type} onChange={e=>setWorkerTaskDraft({...workerTaskDraft,type:e.target.value})}>{(selectedWorkerIsTaskOnly ? employeeTaskTypes : clientTaskTypes).map(t=><option key={t}>{t}</option>)}</Select><Input type="date" value={workerTaskDraft.dueDate} onChange={e=>setWorkerTaskDraft({...workerTaskDraft,dueDate:e.target.value})} /><Input value={workerTaskDraft.note} onChange={e=>setWorkerTaskDraft({...workerTaskDraft,note:e.target.value})} placeholder="הערה למשימה" /><Button onClick={addWorkerTask}>הוספת משימה</Button></div></Card>
+              </div>
+            )}
+
+            {workerPanelTab === "load" && !selectedWorkerIsTaskOnly && (
+              <Card className="p-5"><h4 className="text-xl font-extrabold">טעינת טבלת לקוחות עבור {selectedWorkerPanel.name}</h4><p className="text-sm text-slate-500">כל שורה: שם, טלפון, עיר, אימייל, מוצר.</p><Textarea value={workerBulkText} onChange={e=>setWorkerBulkText(e.target.value)} placeholder="ישראל ישראלי,0500000000,תל אביב,email@test.com,ייעוץ" className="mt-4 min-h-48" /><div className="mt-4 flex flex-wrap gap-2"><Button onClick={loadBulkClientsToWorker}>טעינת לקוחות לעובד</Button><Button variant="ghost" onClick={()=>setWorkerPanelTab("clients")}>חזרה לטבלת לקוחות</Button></div></Card>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
+
+<!-- v34 final export: light refined, dark graphite, WhatsApp opens only -->
